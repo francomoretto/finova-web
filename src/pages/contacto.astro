@@ -1,0 +1,31 @@
+---
+import Container from '@components/common/Container.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { COMPANY } from '@data/company';
+---
+
+<BaseLayout
+  title="Contacto"
+  description="Contacta con FINOVA para estudiar tu operación hipotecaria. Oficina en Oviedo, Asturias."
+  canonical="/contacto/"
+>
+  <Container as="section" class="section" narrow>
+    <h1>Contacto</h1>
+    <p class="lead">Cuéntanos tu caso y estudiamos la operación.</p>
+
+    <h2>Dónde estamos</h2>
+    <address>
+      {COMPANY.legalName}<br />
+      {COMPANY.address.street}<br />
+      {COMPANY.address.postalCode}
+      {COMPANY.address.city} ({COMPANY.address.region})<br />
+      <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+    </address>
+
+    <p class="placeholder-note">
+      Formulario pendiente: el envío será server-side y todavía no está decidido el runtime de
+      producción. Ver <code>src/lib/email/README.md</code>. El schema de validación ya existe en
+      <code>src/lib/validation/contact.ts</code>.
+    </p>
+  </Container>
+</BaseLayout>

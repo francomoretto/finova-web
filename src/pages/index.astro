@@ -1,0 +1,46 @@
+---
+import Container from '@components/common/Container.astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { SERVICES } from '@data/services';
+import { BANKS } from '@data/banks';
+---
+
+<BaseLayout
+  title="Broker hipotecario en Oviedo"
+  description="FINOVA negocia tu hipoteca con más de una decena de entidades. Intermediario de crédito inmobiliario registrado en el Banco de España (E794)."
+  canonical="/"
+>
+  <Container as="section" class="section">
+    <p class="eyebrow">FINOVA</p>
+    <h1>Tu hipoteca, negociada con las entidades adecuadas</h1>
+    <p class="lead">
+      Somos intermediarios de crédito inmobiliario. Estudiamos tu caso y llevamos tu operación a las
+      entidades con las que trabajamos.
+    </p>
+    <p class="placeholder-note">
+      Contenido y diseño de la portada pendientes. Esta página existe para fijar la estructura y las
+      rutas.
+    </p>
+  </Container>
+
+  <Container as="section" class="section section--soft">
+    <h2>Servicios</h2>
+    <ul role="list" class="stack">
+      {
+        SERVICES.map((service) => (
+          <li>
+            <a href={service.href}>{service.title}</a>
+          </li>
+        ))
+      }
+      <li><a href="/simulador-hipoteca/">Simulador de hipoteca</a></li>
+    </ul>
+  </Container>
+
+  <Container as="section" class="section">
+    <h2>Entidades con las que trabajamos</h2>
+    <ul role="list">
+      {BANKS.map((bank) => <li>{bank.name}</li>)}
+    </ul>
+  </Container>
+</BaseLayout>

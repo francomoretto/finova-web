@@ -1,0 +1,99 @@
+---
+/**
+ * Cabecera del sitio. HTML estático, sin JavaScript.
+ * El menú móvil se resolverá con CSS (o una isla mínima) en la etapa de diseño.
+ */
+import Container from '@components/common/Container.astro';
+import { SERVICES } from '@data/services';
+
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { href: '/', label: 'Inicio' },
+  ...SERVICES.map((service) => ({ href: service.href, label: service.navLabel })),
+  { href: '/simulador-hipoteca/', label: 'Simulador' },
+  { href: '/contacto/', label: 'Contacto' },
+];
+
+const isCurrent = (href: string): boolean => currentPath === href;
+---
+
+<header class="site-header">
+  <Container class="site-header__inner">
+    <a class="site-header__brand" href="/">
+      FINOVA
+      <span class="visually-hidden">— Inicio</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Navegación principal">
+      <ul class="site-nav__list" role="list">
+        {
+          navItems.map((item) => (
+            <li>
+              <a
+                class="site-nav__link"
+                href={item.href}
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </Container>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    background-color: var(--color-background);
+    border-block-end: var(--border-default);
+  }
+
+  .site-header :global(.site-header__inner) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--space-4);
+  }
+
+  .site-header__brand {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-navy);
+    text-decoration: none;
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .site-nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    align-items: center;
+    margin: 0;
+  }
+
+  .site-nav__link {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link[aria-current='page'] {
+    color: var(--color-petrol);
+  }
+
+  .site-nav__link[aria-current='page'] {
+    text-decoration: underline;
+    text-underline-offset: 0.35em;
+  }
+</style>

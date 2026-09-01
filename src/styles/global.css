@@ -1,0 +1,22 @@
+/* ==========================================================================
+   FINOVA — Hoja global
+
+   Único punto de entrada de CSS del sitio: se importa una sola vez desde
+   `src/layouts/BaseLayout.astro`. El orden de los imports es significativo.
+   ========================================================================== */
+
+@import './tokens.css';
+@import './reset.css';
+@import './typography.css';
+@import './utilities.css';
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100svb;
+  background-color: var(--color-background);
+}
+
+main {
+  flex: 1;
+}

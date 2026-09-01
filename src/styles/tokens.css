@@ -1,0 +1,125 @@
+/* ==========================================================================
+   FINOVA — Design tokens
+   Fuente única de verdad para color, espaciado, tipografía y elevación.
+   No añadir valores "sueltos" en componentes: crear o reutilizar un token.
+   ========================================================================== */
+
+:root {
+  /* --- Color: marca ----------------------------------------------------- */
+  --color-navy: #171c57;
+  --color-blue: #00286b;
+  --color-petrol: #004374;
+  --color-white: #ffffff;
+
+  /* --- Color: semántico -------------------------------------------------- */
+  --color-text: #0e1633;
+  --color-text-muted: #4a5573;
+  --color-text-inverse: var(--color-white);
+  --color-background: #ffffff;
+  --color-background-soft: #f6f8fb;
+  --color-border: #e5e9f2;
+
+  --color-primary: var(--color-navy);
+  --color-primary-hover: var(--color-blue);
+  --color-accent: var(--color-petrol);
+
+  /* Estados. Contraste AA sobre fondo claro. */
+  --color-success: #14663f;
+  --color-warning: #8a5a00;
+  --color-danger: #9b1c1c;
+  --color-focus: var(--color-petrol);
+
+  /* --- Layout ------------------------------------------------------------ */
+  --container-max-width: 1200px;
+  --container-narrow-width: 760px;
+  --container-padding-inline: var(--space-5);
+
+  /* --- Espaciado (escala 4px) -------------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* Ritmo vertical fluido entre secciones. */
+  --section-spacing: clamp(3rem, 7vw, 6rem);
+
+  /* --- Tipografía -------------------------------------------------------- */
+  /* Las familias self-hosted se declaran en typography.css (@font-face).
+     Hasta que existan los WOFF2, el stack de sistema actúa como fallback. */
+  --font-sans:
+    'Finova Sans', system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif;
+  --font-heading: var(--font-sans);
+  --font-mono: ui-monospace, sfmono-regular, 'SF Mono', menlo, monospace;
+
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.9375rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: clamp(1.25rem, 0.5vw + 1.1rem, 1.375rem);
+  --font-size-2xl: clamp(1.5rem, 1vw + 1.25rem, 1.875rem);
+  --font-size-3xl: clamp(1.875rem, 2vw + 1.4rem, 2.5rem);
+  --font-size-4xl: clamp(2.25rem, 3vw + 1.5rem, 3.25rem);
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.15;
+  --line-height-heading: 1.25;
+  --line-height-base: 1.6;
+  --line-height-relaxed: 1.75;
+
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.04em;
+
+  --measure: 68ch;
+
+  /* --- Radios ------------------------------------------------------------ */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* --- Sombras ----------------------------------------------------------- */
+  --shadow-sm: 0 1px 2px rgb(14 22 51 / 6%);
+  --shadow-md: 0 4px 16px rgb(14 22 51 / 8%);
+  --shadow-lg: 0 12px 32px rgb(14 22 51 / 12%);
+
+  /* --- Bordes ------------------------------------------------------------ */
+  --border-width: 1px;
+  --border-default: var(--border-width) solid var(--color-border);
+
+  /* --- Transiciones ------------------------------------------------------ */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --easing-standard: cubic-bezier(0.2, 0, 0.2, 1);
+  --transition-colors:
+    color var(--duration-base) var(--easing-standard),
+    background-color var(--duration-base) var(--easing-standard),
+    border-color var(--duration-base) var(--easing-standard);
+
+  /* --- Focus ------------------------------------------------------------- */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* --- z-index ----------------------------------------------------------- */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-header: 200;
+  --z-overlay: 800;
+  --z-modal: 900;
+  --z-toast: 1000;
+}

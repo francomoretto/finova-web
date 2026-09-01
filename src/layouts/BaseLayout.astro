@@ -1,0 +1,86 @@
+---
+/**
+ * Layout base del sitio: <head> completo, cabecera, main y pie.
+ * Todas las páginas lo usan; es el único punto donde se importa el CSS global.
+ */
+import Footer from '@components/common/Footer.astro';
+import Header from '@components/common/Header.astro';
+import { SITE } from '@data/company';
+import { buildOrganizationSchema, buildWebPageSchema, buildWebSiteSchema } from '@lib/seo/schema';
+import '@styles/global.css';
+
+interface Props {
+  /** Título de la página, sin el sufijo de marca. */
+  title: string;
+  /** Meta description. */
+  description: string;
+  /** Ruta canónica (p. ej. "/contacto/") o URL absoluta. */
+  canonical: string;
+  /**
+   * Imagen para Open Graph / Twitter. Ruta o URL absoluta.
+   * Sin valor, NO se emiten `og:image` ni `twitter:image`: es preferible no
+   * declarar imagen social a apuntar a un archivo que no existe.
+   */
+  ogImage?: string;
+  /** Excluir la página de los buscadores. */
+  noindex?: boolean;
+}
+
+const { title, description, canonical, ogImage, noindex = false } = Astro.props;
+
+const site = Astro.site ?? new URL(SITE.url);
+const canonicalUrl = new URL(canonical, site).href;
+const ogImageUrl = ogImage === undefined ? null : new URL(ogImage, site).href;
+const pageTitle = `${title} | ${SITE.name}`;
+const robots = noindex ? 'noindex, nofollow' : 'index, follow';
+
+const jsonLd = [
+  buildOrganizationSchema(),
+  buildWebSiteSchema(),
+  buildWebPageSchema({ title: pageTitle, description, canonical: canonicalUrl }),
+];
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content={robots} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#171C57" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    {ogImageUrl !== null && <meta property="og:image" content={ogImageUrl} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content={ogImageUrl === null ? 'summary' : 'summary_large_image'} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImageUrl !== null && <meta name="twitter:image" content={ogImageUrl} />}
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

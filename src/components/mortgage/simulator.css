@@ -1,0 +1,36 @@
+/* Estilos del simulador. Se cargan sólo en las páginas que montan la isla. */
+
+.simulator {
+  padding: var(--space-6);
+  background-color: var(--color-background-soft);
+  border: var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.simulator__title {
+  font-size: var(--font-size-xl);
+  color: var(--color-navy);
+}
+
+.simulator__status {
+  margin-block-start: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.simulator__defaults {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin-block-start: var(--space-5);
+  font-size: var(--font-size-sm);
+}
+
+.simulator__defaults dt {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-navy);
+}
+
+.simulator__defaults dd {
+  margin-inline-start: 0;
+  color: var(--color-text-muted);
+}

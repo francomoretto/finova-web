@@ -1,0 +1,35 @@
+---
+import Container from '@components/common/Container.astro';
+import MortgageSimulator from '@components/mortgage/MortgageSimulator';
+import BaseLayout from '@layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Simulador de hipoteca"
+  description="Calcula la cuota de tu hipoteca a tipo fijo, el ahorro necesario y el cuadro de amortización con el simulador de FINOVA."
+  canonical="/simulador-hipoteca/"
+>
+  <Container as="section" class="section">
+    <h1>Simulador de hipoteca</h1>
+    <p class="lead">
+      Estima tu cuota mensual, la aportación propia necesaria y el cuadro de amortización.
+    </p>
+
+    {
+      /*
+      Sin directiva `client:*`: el placeholder no tiene interacción, así que se
+      renderiza en el servidor y esta página tampoco envía JavaScript al cliente.
+
+      Cuando el simulador tenga interacción real, se hidratará con
+      `client:visible` (no `client:load`): está por debajo del pliegue y no debe
+      competir por el hilo principal durante la carga inicial.
+    */
+    }
+    <MortgageSimulator />
+
+    <p class="placeholder-note">
+      Motor de cálculo disponible en <code>src/lib/mortgage</code>. Interfaz e integración fiscal
+      pendientes.
+    </p>
+  </Container>
+</BaseLayout>
