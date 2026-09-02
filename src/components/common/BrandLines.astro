@@ -2,26 +2,26 @@
 /**
  * Recurso decorativo de líneas diagonales de FINOVA.
  *
- * ⚠️ Hoy NO dibuja nada. Es deliberado: no se recrea el isotipo ni se inventan
- * formas con CSS. Este componente sólo reserva el hueco y el hook de estilo.
+ * Usa los SVG reales de la marca (`public/brand/`). Existen dos tintas:
+ *   - `dark`  navy + petróleo, para fondos claros
+ *   - `light` blanco + navy, para fondos oscuros
  *
- * ── Cómo activarlo cuando llegue el SVG ──────────────────────────────────
- * 1. Colocar el archivo en `public/brand/` (p. ej. `lines-diagonal.svg`).
- * 2. Dar valor a la custom property en la sección que lo use:
- *      .hero { --brand-lines-image: url('/brand/lines-diagonal.svg'); }
- * 3. Ajustar `position` y `size` con las props de este componente.
+ * Las fotografías de la web actual ya traen las líneas incrustadas; este
+ * componente es para las secciones que NO tienen imagen de fondo.
  *
- * Es puramente decorativo: `aria-hidden` y fuera del orden de foco.
- * ------------------------------------------------------------------------
+ * Puramente decorativo: `aria-hidden` y sin captura de puntero.
  */
 interface Props {
+  tone?: 'dark' | 'light';
   /** Esquina donde se ancla el recurso. */
-  position?: 'top-end' | 'bottom-start' | 'cover';
+  position?: 'top-end' | 'bottom-start' | 'top-start' | 'bottom-end';
   class?: string;
 }
 
-const { position = 'cover', class: className }: Props = Astro.props;
-const classes = ['brand-lines', `brand-lines--${position}`, className].filter(Boolean).join(' ');
+const { tone = 'dark', position = 'top-end', class: className }: Props = Astro.props;
+const classes = ['brand-lines', `brand-lines--${position}`, `brand-lines--${tone}`, className]
+  .filter(Boolean)
+  .join(' ');
 ---
 
 <div class={classes} aria-hidden="true"></div>
@@ -29,26 +29,41 @@ const classes = ['brand-lines', `brand-lines--${position}`, className].filter(Bo
 <style>
   .brand-lines {
     position: absolute;
-    inset: 0;
     z-index: -1;
-    /* Sin recurso todavía: no pinta nada. */
-    background-image: var(--brand-lines-image, none);
+    inline-size: clamp(4.5rem, 8vw, 8rem);
+    /* Proporción original del SVG: 95,19 × 236,65. */
+    aspect-ratio: 95.19 / 236.65;
     background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
     pointer-events: none;
   }
 
-  .brand-lines--cover {
-    background-position: center;
-    background-size: cover;
+  .brand-lines--dark {
+    background-image: url('/brand/finova-lines-dark.svg');
+  }
+
+  .brand-lines--light {
+    background-image: url('/brand/finova-lines-light.svg');
   }
 
   .brand-lines--top-end {
-    background-position: right top;
-    background-size: contain;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+
+  .brand-lines--top-start {
+    inset-block-start: 0;
+    inset-inline-start: 0;
   }
 
   .brand-lines--bottom-start {
-    background-position: left bottom;
-    background-size: contain;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+  }
+
+  .brand-lines--bottom-end {
+    inset-block-end: 0;
+    inset-inline-end: 0;
   }
 </style>

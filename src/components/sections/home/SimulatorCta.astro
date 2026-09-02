@@ -3,6 +3,7 @@
  * Bloque destacado que dirige al simulador.
  * No contiene lógica de cálculo: sólo enlaza a `/simulador-hipoteca/`.
  */
+import BrandLines from '@components/common/BrandLines.astro';
 import Button from '@components/common/Button.astro';
 import Container from '@components/common/Container.astro';
 ---
@@ -10,6 +11,8 @@ import Container from '@components/common/Container.astro';
 <section class="simulator-cta">
   <Container>
     <div class="simulator-cta__panel">
+      <BrandLines tone="dark" position="bottom-end" class="simulator-cta__lines" />
+
       <div class="simulator-cta__content">
         <h2 class="simulator-cta__title">Calcula una estimación de tu hipoteca</h2>
         <p class="simulator-cta__text">
@@ -31,12 +34,20 @@ import Container from '@components/common/Container.astro';
   }
 
   .simulator-cta__panel {
+    position: relative;
     display: grid;
     gap: var(--space-7);
     padding: var(--space-9) var(--space-7);
+    overflow: hidden;
     background-color: var(--color-background-soft);
     border: var(--border-default);
     border-radius: var(--radius-lg);
+    isolation: isolate;
+  }
+
+  .simulator-cta__panel :global(.simulator-cta__lines) {
+    inline-size: clamp(3.5rem, 6vw, 5.5rem);
+    opacity: 0.5;
   }
 
   .simulator-cta__title {
@@ -46,6 +57,7 @@ import Container from '@components/common/Container.astro';
   .simulator-cta__text {
     max-inline-size: 52ch;
     margin-block-start: var(--space-4);
+    font-size: var(--font-size-body-sm);
     color: var(--color-text-muted);
   }
 

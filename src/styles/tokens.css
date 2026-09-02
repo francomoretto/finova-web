@@ -47,14 +47,22 @@
        xl  90rem 1440px
      -------------------------------------------------------------------- */
 
-  /* --- Layout ------------------------------------------------------------ */
-  --container-max-width: 75rem; /* 1200px */
-  --container-wide-width: 90rem; /* 1440px */
+  /* --- Layout ------------------------------------------------------------
+     Medido sobre las capturas de la web actual (viewport 1710px): el contenido
+     ocupa ~1510px con ~100px de calle. Se adopta un contenedor de 1440px, que
+     reproduce esa amplitud manteniendo un tope razonable en pantallas grandes.
+     -------------------------------------------------------------------- */
+  /* `box-sizing: border-box`: el max-width incluye el padding lateral, así que
+     1512px de contenido + 2×40px de padding = 1592px. A 1710px de viewport el
+     contenido arranca en x=99, igual que la cabecera de la web actual. */
+  --container-max-width: 99.5rem; /* 1592px */
+  --container-wide-width: 110rem; /* 1760px */
   --container-narrow-width: 47.5rem; /* 760px */
   /* Móvil: 20px. Se amplía por breakpoint más abajo. */
   --container-padding-inline: var(--space-5);
 
-  --header-height: 4.5rem; /* 72px */
+  /* Cabecera medida en la web actual: 107px en escritorio. */
+  --header-height: 4.5rem; /* 72px · móvil */
 
   /* --- Espaciado ---------------------------------------------------------
      Escala: 4 8 12 16 20 24 32 40 48 64 80 96 120 px.
@@ -88,15 +96,18 @@
   --font-mono: ui-monospace, sfmono-regular, 'SF Mono', menlo, monospace;
 
   /* --- Tipografía: escala responsive --------------------------------------
+     Calibrada contra las capturas de la web actual (viewport 1710px):
+       H1 hero ~30px · H2 de sección ~31px · H2 institucional ~35px
+       títulos de paso ~15px · texto ~15-16px · nav y botones ~16px
      Todos los tamaños del sitio salen de aquí. Ningún componente define
      `font-size` con un valor arbitrario.
      -------------------------------------------------------------------- */
-  --font-size-display: clamp(2.5rem, 1.55rem + 3.8vw, 4.5rem);
-  --font-size-h1: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
-  --font-size-h2: clamp(1.625rem, 1.27rem + 1.42vw, 2.375rem);
-  --font-size-h3: clamp(1.375rem, 1.2rem + 0.71vw, 1.75rem);
-  --font-size-h4: clamp(1.125rem, 1.05rem + 0.3vw, 1.3125rem);
-  --font-size-body-lg: clamp(1.0625rem, 1.03rem + 0.15vw, 1.1875rem);
+  --font-size-display: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
+  --font-size-h1: clamp(1.75rem, 1.63rem + 0.48vw, 1.9375rem);
+  --font-size-h2: clamp(1.5rem, 1.36rem + 0.57vw, 1.9375rem);
+  --font-size-h3: clamp(1.125rem, 1.06rem + 0.24vw, 1.25rem);
+  --font-size-h4: clamp(1rem, 0.97rem + 0.12vw, 1.0625rem);
+  --font-size-body-lg: clamp(1rem, 0.98rem + 0.09vw, 1.0625rem);
   --font-size-body: 1rem;
   --font-size-body-sm: 0.9375rem;
   --font-size-label: 0.8125rem;
@@ -106,8 +117,8 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  --line-height-display: 1.05;
-  --line-height-heading: 1.2;
+  --line-height-display: 1.1;
+  --line-height-heading: 1.15;
   --line-height-snug: 1.35;
   --line-height-body: 1.6;
   --line-height-relaxed: 1.75;
@@ -175,6 +186,7 @@
 
 @media (min-width: 64rem) {
   :root {
-    --container-padding-inline: var(--space-7);
+    --container-padding-inline: var(--space-8); /* 40px */
+    --header-height: 6.5rem; /* 104px · medido en la web actual */
   }
 }

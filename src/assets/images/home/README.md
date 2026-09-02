@@ -1,28 +1,28 @@
 # Imágenes de la portada
 
-Vacío a propósito: **no se descargan ni se generan imágenes**. Aquí van las
-fotografías reales que proporcione FINOVA.
+Bandas gráficas oficiales de FINOVA, procedentes del material de la web actual.
+Todas miden **2172×724** (≈3:1) y **ya llevan incrustadas** las líneas
+diagonales de la marca, así que no se les superpone ningún recurso decorativo.
+
+| Archivo                     | Origen                     | Sección            |
+| --------------------------- | -------------------------- | ------------------ |
+| `hero-finova.png`           | `hero-finova-2.png`        | Hero               |
+| `banda-propuesta-valor.png` | `imagen-inicio.png`        | Propuesta de valor |
+| `banda-institucional.png`   | `imagen-institucional.png` | Sobre FINOVA       |
+| `banda-footer.png`          | `imagen-footer.png`        | Pie de página      |
+
+## Cómo se usan
+
+Con `<Image>` de Astro (genera WebP/AVIF y varios anchos). Cada archivo tiene
+una zona «limpia» y otra con fotografía o diagonales claras, así que el
+`object-position` cambia entre móvil y escritorio: está comentado en cada
+componente. En pantallas estrechas las bandas oscuras llevan además un velo de
+contraste para garantizar la legibilidad del texto blanco.
+
+El hero es el LCP: se carga con `loading="eager"` y `fetchpriority="high"`.
 
 ## Pendiente
 
-| Archivo esperado       | Uso                       | Proporción sugerida |
-| ---------------------- | ------------------------- | ------------------- |
-| `hero.jpg` (o `.webp`) | Imagen principal del hero | 4/5 (vertical)      |
-
-## Cómo incorporarla
-
-1. Dejar el archivo en esta carpeta (no en `public/`: así Astro la optimiza,
-   genera AVIF/WebP y le pone hash de caché).
-2. En [`Hero.astro`](../../../components/sections/home/Hero.astro), seguir las
-   instrucciones del comentario de la zona `hero__media`: sustituir el
-   marcador por
-   ```astro
-   import {Image} from 'astro:assets'; import heroImage from '@assets/images/home/hero.jpg' <Image
-     src={heroImage}
-     alt="…"
-     widths={[480, 720, 960]}
-     loading="eager"
-   />
-   ```
-3. El `alt` debe describir la escena; escribirlo cuando se conozca la imagen.
-4. `index.astro` no cambia.
+- Versiones **verticales o cuadradas** pensadas para móvil. Hoy se recorta la
+  banda horizontal, que es lo mejor disponible pero no lo ideal.
+- Fotografía propia si se quiere sustituir la de stock del hero.

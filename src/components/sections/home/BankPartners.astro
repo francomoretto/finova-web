@@ -68,8 +68,21 @@ import { BANKS } from '@data/banks';
 
   @media (min-width: 48rem) {
     .banks__grid {
-      grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--space-5);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .banks__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* Once entidades: 6 + 5 reparte mejor que dejar una fila casi vacía. */
+  @media (min-width: 90rem) {
+    .banks__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
     }
   }
 </style>

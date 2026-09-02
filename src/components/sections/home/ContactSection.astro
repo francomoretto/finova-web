@@ -11,12 +11,25 @@
  * alimenta el schema de Zod), de modo que la validación del navegador y la del
  * servidor no puedan divergir.
  */
+import { Image } from 'astro:assets';
+
 import Container from '@components/common/Container.astro';
+import iconEmail from '@assets/icons/icon-email.png';
 import { COMPANY } from '@data/company';
 import { CONTACT_LIMITS, PHONE_PATTERN } from '@lib/validation/contact';
+
+/*
+  La web actual muestra además teléfono (con icono `icon-phone.png`) y sitio
+  web (`icon-web.png`). El teléfono NO se incorpora aquí porque no está entre
+  los datos corporativos confirmados para la nueva web: en cuanto se confirme,
+  basta con añadir otra entrada a esta lista.
+*/
+const contactItems = [
+  { icon: iconEmail, label: 'Email', value: COMPANY.email, href: `mailto:${COMPANY.email}` },
+] as const;
 ---
 
-<section class="contact section--soft" id="contacto">
+<section class="contact" id="contacto">
   <Container>
     <div class="contact__grid">
       <div class="contact__intro">
@@ -25,6 +38,19 @@ import { CONTACT_LIMITS, PHONE_PATTERN } from '@lib/validation/contact';
           Cuéntanos tu caso y estudiamos la operación sin compromiso. Analizamos tu perfil y te
           decimos con claridad qué alternativas de financiación tienes.
         </p>
+
+        <ul class="contact__items" role="list">
+          {
+            contactItems.map((item) => (
+              <li class="contact__item">
+                <Image class="contact__icon" src={item.icon} alt="" width={36} height={36} />
+                <a class="contact__item-link" href={item.href}>
+                  {item.value}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
 
         <p class="contact__regulatory">
           {COMPANY.legalName} — Intermediario de Crédito Inmobiliario registrado en el Banco de España
@@ -140,7 +166,7 @@ import { CONTACT_LIMITS, PHONE_PATTERN } from '@lib/validation/contact';
             <button class="contact__submit" type="submit" disabled>Enviar consulta</button>
           </div>
 
-          <p class="contact__status placeholder-note" id="contact-status">
+          <p class="contact__status placeholder-note field--full" id="contact-status">
             El envío del formulario todavía no está activo: queda pendiente de definir el entorno de
             ejecución en producción. Hasta entonces, el botón permanece deshabilitado para no dar
             por enviada una consulta que no llegaría a su destino.
@@ -153,10 +179,10 @@ import { CONTACT_LIMITS, PHONE_PATTERN } from '@lib/validation/contact';
           <dl class="privacy__list">
             <dt>Responsable</dt>
             <dd>
-              {COMPANY.legalName} · NIF {COMPANY.nif}<br />
-              {COMPANY.address.street}, {COMPANY.address.postalCode}
-              {COMPANY.address.city}
-              ({COMPANY.address.region})<br />
+              {`${COMPANY.legalName} · NIF ${COMPANY.nif}`}<br />
+              {
+                `${COMPANY.address.street}, ${COMPANY.address.postalCode} ${COMPANY.address.city} (${COMPANY.address.region})`
+              }<br />
               <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
             </dd>
           </dl>
@@ -193,17 +219,43 @@ import { CONTACT_LIMITS, PHONE_PATTERN } from '@lib/validation/contact';
 
   .contact__regulatory {
     max-inline-size: 46ch;
-    margin-block-start: var(--space-8);
+    margin-block-start: var(--space-9);
     font-size: var(--font-size-label);
     line-height: var(--line-height-relaxed);
     color: var(--color-text-muted);
   }
 
-  .contact__panel {
-    padding: var(--space-7);
-    background-color: var(--color-background);
-    border: var(--border-default);
-    border-radius: var(--radius-lg);
+  /* En la web actual el formulario va directamente sobre el fondo blanco,
+     sin tarjeta: sólo los campos tienen borde. */
+  .contact__items {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+    margin-block-start: var(--space-7);
+  }
+
+  .contact__item {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .contact__icon {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    flex-shrink: 0;
+  }
+
+  .contact__item-link {
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .contact__item-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
   }
 
   .contact__form {
@@ -359,22 +411,13 @@ import { CONTACT_LIMITS, PHONE_PATTERN } from '@lib/validation/contact';
     .field--full {
       grid-column: 1 / -1;
     }
-
-    .contact__submit {
-      inline-size: auto;
-      min-inline-size: 16rem;
-    }
   }
 
   @media (min-width: 64rem) {
     .contact__grid {
-      grid-template-columns: 1fr 1.25fr;
+      grid-template-columns: 1fr 1.35fr;
       gap: var(--space-11);
       align-items: start;
-    }
-
-    .contact__panel {
-      padding: var(--space-9);
     }
   }
 </style>

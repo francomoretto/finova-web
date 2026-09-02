@@ -4,12 +4,14 @@
  *
  * Desktop: 4 columnas · Tablet: 2×2 · Móvil: 1 columna.
  *
- * El fondo está preparado para recibir el recurso gráfico de líneas de la
- * marca sin tocar el markup: basta con dar valor a `--footer-pattern` en el
- * bloque señalado más abajo.
+ * El fondo es la banda azul de la web actual (2172×724), que ya trae las
+ * líneas diagonales de FINOVA incrustadas.
  */
+import { Image } from 'astro:assets';
+
 import Container from '@components/common/Container.astro';
 import Logo from '@components/common/Logo.astro';
+import bandImage from '@assets/images/home/banda-footer.png';
 import { COMPANY } from '@data/company';
 import { legalNavigation, mainNavigation, serviceNavigation } from '@data/navigation';
 
@@ -17,12 +19,21 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__decor" aria-hidden="true"></div>
+  <div class="site-footer__decor">
+    <Image
+      class="site-footer__decor-image"
+      src={bandImage}
+      alt=""
+      widths={[768, 1200, 1600, 2172]}
+      sizes="100vw"
+      loading="lazy"
+    />
+  </div>
 
   <Container>
     <div class="site-footer__grid">
       <div class="site-footer__brand">
-        <Logo tone="light" />
+        <Logo tone="light" label="FINOVA" />
         <p class="site-footer__claim">Simplificamos decisiones complejas.</p>
       </div>
 
@@ -78,13 +89,13 @@ const year = new Date().getFullYear();
     <div class="site-footer__legal">
       <p class="site-footer__regulatory">
         {COMPANY.legalName}<br />
-        Intermediario de Crédito Inmobiliario registrado en el Banco de España ·
-        {COMPANY.registrations.bankOfSpain}<br />
-        Asociado ANICI · Nº {COMPANY.registrations.anici}
+        {
+          `Intermediario de Crédito Inmobiliario registrado en el Banco de España · ${COMPANY.registrations.bankOfSpain}`
+        }<br />
+        {`Asociado ANICI · Nº ${COMPANY.registrations.anici}`}
       </p>
       <p class="site-footer__copyright">
-        © {year}
-        {COMPANY.brand}. Todos los derechos reservados.
+        {`© ${year} ${COMPANY.brand}. Todos los derechos reservados.`}
       </p>
     </div>
   </Container>
@@ -92,37 +103,28 @@ const year = new Date().getFullYear();
 
 <style>
   .site-footer {
-    /* ── Fondo ──────────────────────────────────────────────────────────
-       Degradado muy sutil entre el azul principal y el azul marino.
-       Para añadir después el recurso gráfico de líneas de la marca basta con
-       dar valor a `--footer-pattern` aquí; el markup no cambia:
-         --footer-pattern: url('/brand/footer-lines.svg');
-       ------------------------------------------------------------------ */
-    --footer-pattern: none;
-
     position: relative;
-    padding-block: var(--space-12) var(--space-9);
-    margin-block-start: var(--section-spacing);
+    padding-block: var(--space-11) var(--space-8);
     color: var(--color-white);
-    background-color: var(--color-surface-dark);
-    background-image: linear-gradient(
-      160deg,
-      var(--color-surface-dark) 0%,
-      var(--color-surface-dark-alt) 100%
-    );
+    /* Color de respaldo mientras carga la imagen. */
+    background-color: var(--color-surface-dark-alt);
     isolation: isolate;
   }
 
-  /* Capa decorativa: existe desde ya para no tocar el markup más adelante. */
+  /* Banda azul de la marca: ya trae las líneas diagonales incrustadas. */
   .site-footer__decor {
     position: absolute;
     inset: 0;
     z-index: -1;
-    background-image: var(--footer-pattern);
-    background-repeat: no-repeat;
-    background-position: right top;
-    background-size: cover;
+    overflow: hidden;
     pointer-events: none;
+  }
+
+  .site-footer__decor-image {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: right center;
   }
 
   /* --- Rejilla ----------------------------------------------------------- */
@@ -131,6 +133,10 @@ const year = new Date().getFullYear();
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-9) var(--space-7);
+  }
+
+  .site-footer__brand {
+    --logo-height: 3.75rem;
   }
 
   .site-footer__claim {

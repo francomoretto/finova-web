@@ -1,37 +1,26 @@
 # Assets de marca
 
-Directorio para el logotipo de FINOVA. **Está vacío a propósito: todavía no
-existe el archivo definitivo y no se generan logos falsos.**
+Logotipos oficiales de FINOVA, procedentes del material de la web actual
+(`web-actual/`, fuera del repositorio). Astro los optimiza y versiona.
 
-## Archivos que faltan
+| Archivo                 | Origen                       | Tamaño   | Uso                      |
+| ----------------------- | ---------------------------- | -------- | ------------------------ |
+| `logo-finova.png`       | `Recurso 18@150x.png`        | 778×329  | Fondos claros (cabecera) |
+| `logo-finova-white.png` | `recurso_9_transparente.png` | 1800×761 | Fondos oscuros (pie)     |
 
-| Archivo                 | Uso                                           |
-| ----------------------- | --------------------------------------------- |
-| `logo-finova.svg`       | Cabecera y fondos claros (tinta azul marino)  |
-| `logo-finova-white.svg` | Pie de página y fondos oscuros (tinta blanca) |
+Ambos incluyen isotipo, marca y la bajada «Intermediación hipotecaria».
+Proporción 2,36:1.
 
-## Cómo incorporarlos
+## Cómo se usan
 
-1. Colocar ambos SVG en este directorio (`src/assets/brand/`, no en `public/`:
-   así Astro los optimiza y les pone hash de caché).
-2. Abrir [`src/components/common/Logo.astro`](../../components/common/Logo.astro)
-   y seguir las instrucciones del comentario que hay al principio: sustituir el
-   logotipo tipográfico provisional por el `<img>`/SVG inline.
-3. No hace falta tocar `Header.astro` ni `Footer.astro`: ambos consumen
-   `Logo.astro` y no saben cómo está dibujada la marca.
+Sólo a través de [`Logo.astro`](../../components/common/Logo.astro), que expone
+`tone="dark" | "light"`. Header y Footer no conocen los nombres de archivo: si
+cambian, se cambia únicamente ese componente. El alto se controla con la custom
+property `--logo-height`.
 
-## Requisitos del SVG
+## Pendiente
 
-- `viewBox` presente y sin `width`/`height` fijos, para que escale.
-- Sin texto convertido a `<text>`: los trazos deben ir vectorizados (`<path>`).
-- Sin referencias a fuentes ni a recursos externos.
-- Colores planos; nada de degradados ni filtros innecesarios.
-- Optimizado (SVGO o equivalente) antes de subirlo.
-
-El nombre accesible NO va dentro del SVG: lo aporta `Logo.astro`, para no
-duplicar texto ante los lectores de pantalla.
-
-## Favicon
-
-`public/favicon.svg` es una marca tipográfica provisional. Debe sustituirse por
-la versión oficial cuando exista.
+- **SVG oficiales.** Hoy sólo tenemos PNG. Si existe la versión vectorial,
+  sustituirla: escala mejor y pesa menos.
+- Las líneas diagonales de la marca están en `public/brand/` (SVG), porque se
+  usan como `background-image` desde CSS.

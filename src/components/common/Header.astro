@@ -26,7 +26,7 @@ const currentPath = Astro.url.pathname;
   <Container>
     <div class="site-header__inner">
       <a class="site-header__brand" href="/">
-        <Logo label="FINOVA · Inicio" />
+        <Logo label="FINOVA · Inicio" eager />
       </a>
 
       <button
@@ -114,6 +114,9 @@ const currentPath = Astro.url.pathname;
   .site-header__brand {
     display: inline-flex;
     align-items: center;
+    /* Alto medido en la web actual: 67px en escritorio. */
+    --logo-height: 2.75rem;
+
     min-block-size: var(--tap-target-min);
     text-decoration: none;
     border-radius: var(--radius-xs);
@@ -236,16 +239,25 @@ const currentPath = Astro.url.pathname;
       display: none;
     }
 
-    .site-header__panel {
-      position: static;
-      display: flex;
-      flex-direction: row;
+    .site-header__brand {
+      --logo-height: 4.1875rem; /* 67px */
+    }
+
+    /* Logo · navegación centrada · CTA a la derecha (composición de la web
+       actual). `display: contents` deja que la navegación y el CTA sean
+       elementos directos de la rejilla sin tocar el markup del panel móvil. */
+    .site-header__inner {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       gap: var(--space-6);
-      align-items: center;
-      padding: 0;
-      background: none;
-      border: 0;
-      box-shadow: none;
+    }
+
+    .site-header__panel {
+      display: contents;
+    }
+
+    .site-nav {
+      justify-self: center;
     }
 
     .site-nav__list {
@@ -257,13 +269,14 @@ const currentPath = Astro.url.pathname;
     .site-nav__link {
       min-block-size: auto;
       padding-block: var(--space-2);
-      padding-inline: var(--space-3);
-      font-size: var(--font-size-body-sm);
+      padding-inline: var(--space-4);
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-semibold);
       white-space: nowrap;
     }
 
     .site-nav__link[aria-current='page'] {
-      background-color: var(--color-background-soft);
+      background-color: transparent;
     }
 
     .site-header__cta {
@@ -274,8 +287,8 @@ const currentPath = Astro.url.pathname;
   }
 
   @media (min-width: 75rem) {
-    .site-header__panel {
-      gap: var(--space-7);
+    .site-nav__list {
+      gap: var(--space-2);
     }
   }
 

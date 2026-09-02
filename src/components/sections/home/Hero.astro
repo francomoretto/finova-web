@@ -2,57 +2,72 @@
 /**
  * Hero de la portada.
  *
- * Desktop: texto a la izquierda, imagen a la derecha.
- * Móvil:   texto primero, imagen después (mismo orden en el DOM).
+ * La imagen de la web actual (2172×724) ya trae incorporadas la fotografía y
+ * las líneas diagonales de FINOVA, y su mitad izquierda es clara: el texto se
+ * apoya sobre ella. Medido sobre la captura de referencia (viewport 1710px):
+ *
+ *   alto del hero        570px (proporción natural 3:1 de la imagen)
+ *   texto                columna de ~570px, desde la calle del contenedor
+ *   cabecera → H1        101px
+ *   H1 → párrafo          30px
+ *   párrafo → botones     72px
+ *
+ * Escritorio: la imagen es una capa a sangre y el texto se superpone.
+ * Móvil: primero el texto, después la imagen recortada sobre la pareja.
  */
-import BrandLines from '@components/common/BrandLines.astro';
+import { Image } from 'astro:assets';
+
 import Button from '@components/common/Button.astro';
 import Container from '@components/common/Container.astro';
+import heroImage from '@assets/images/home/hero-finova.png';
 import { COMPANY } from '@data/company';
 import { primaryCta } from '@data/navigation';
 ---
 
 <section class="hero">
-  <BrandLines position="top-end" />
+  {
+    /*
+    Decorativa: la escena no aporta información que no esté en el texto, y el
+    recurso gráfico de marca ya va incrustado en el archivo.
+  */
+  }
+  <div class="hero__media">
+    <Image
+      class="hero__image"
+      src={heroImage}
+      alt=""
+      widths={[768, 1200, 1600, 2172]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
+  </div>
 
-  <Container>
-    <div class="hero__grid">
-      <div class="hero__content">
-        <p class="eyebrow">Broker hipotecario</p>
+  <Container class="hero__container">
+    <div class="hero__content">
+      <p class="eyebrow">Broker hipotecario</p>
 
-        <h1 class="hero__title">
-          No solo conseguimos hipotecas. Te acompañamos en una de las decisiones más importantes de
-          tu vida.
-        </h1>
+      <h1 class="hero__title">
+        No solo conseguimos hipotecas. Te acompañamos en una de las decisiones más importantes de tu
+        vida.
+      </h1>
 
-        <p class="hero__text">
-          En FINOVA somos un broker hipotecario registrado en el Banco de España. Analizamos tu
-          perfil, buscamos y negociamos alternativas de financiación entre distintas entidades y te
-          acompañamos durante todo el proceso, desde el estudio inicial hasta la firma de tu
-          hipoteca.
-        </p>
+      <p class="hero__text">
+        En FINOVA somos un broker hipotecario registrado en el Banco de España. Analizamos tu
+        perfil, buscamos y negociamos alternativas de financiación entre distintas entidades y te
+        acompañamos durante todo el proceso, desde el estudio inicial hasta la firma de tu hipoteca.
+      </p>
 
-        <div class="hero__actions">
-          <Button href={primaryCta.href} size="large">{primaryCta.label}</Button>
-          <Button href="/#proceso" variant="secondary" size="large">Cómo trabajamos</Button>
-        </div>
-
-        <p class="hero__regulatory">
-          Intermediario de Crédito Inmobiliario · Banco de España · Nº
-          {COMPANY.registrations.bankOfSpain}
-        </p>
+      <div class="hero__actions">
+        <Button href={primaryCta.href}>{primaryCta.label}</Button>
+        <Button href="/#proceso" variant="secondary">Cómo trabajamos</Button>
       </div>
 
-      {
-        /*
-        Zona de imagen. Marcador discreto hasta que exista el asset real:
-        no se usan fotografías externas ni degradados que finjan una fotografía.
-        Instrucciones de sustitución en src/assets/images/home/README.md.
-      */
-      }
-      <div class="hero__media">
-        <p class="hero__media-note">Imagen pendiente de entrega</p>
-      </div>
+      <p class="hero__regulatory">
+        {
+          `Intermediario de Crédito Inmobiliario · Banco de España · Nº ${COMPANY.registrations.bankOfSpain}`
+        }
+      </p>
     </div>
   </Container>
 </section>
@@ -60,66 +75,118 @@ import { primaryCta } from '@data/navigation';
 <style>
   .hero {
     position: relative;
-    padding-block: var(--space-10) var(--space-11);
     isolation: isolate;
   }
 
-  .hero__grid {
-    display: grid;
-    gap: var(--space-9);
-    align-items: center;
+  /* --- Móvil: texto primero, imagen después ------------------------------ */
+
+  .hero__media {
+    order: 2;
+  }
+
+  .hero__image {
+    inline-size: 100%;
+    /* Recorte propio de móvil: la composición horizontal no funciona a 390px,
+       así que se encuadra sobre la pareja en lugar de centrar la imagen. */
+    aspect-ratio: 16 / 11;
+    object-fit: cover;
+    object-position: 72% center;
+  }
+
+  .hero {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero :global(.hero__container) {
+    order: 1;
+    padding-block: var(--space-9) var(--space-8);
+  }
+
+  /* Composición apilada (< 1280px): el texto no debe cruzar toda la pantalla. */
+  .hero__content {
+    max-inline-size: 48rem;
   }
 
   .hero__title {
     margin-block-start: var(--space-4);
-    text-wrap: balance;
   }
 
   .hero__text {
-    max-inline-size: 54ch;
-    margin-block-start: var(--space-6);
-    font-size: var(--font-size-body-lg);
-    line-height: var(--line-height-relaxed);
-    color: var(--color-text-muted);
+    max-inline-size: 52ch;
+    margin-block-start: var(--space-5);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
+    color: var(--color-text);
   }
 
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-4);
-    margin-block-start: var(--space-8);
+    margin-block-start: var(--space-7);
   }
 
   .hero__regulatory {
     max-inline-size: none;
-    margin-block-start: var(--space-7);
+    margin-block-start: var(--space-6);
     font-size: var(--font-size-label);
     color: var(--color-text-muted);
   }
 
-  .hero__media {
-    display: grid;
-    place-items: center;
-    aspect-ratio: 4 / 5;
-    background-color: var(--color-background-soft);
-    border: var(--border-width) dashed var(--color-border);
-    border-radius: var(--radius-lg);
-  }
+  /* --- Escritorio: imagen a sangre, texto encima ------------------------- */
 
-  .hero__media-note {
-    max-inline-size: none;
-    font-size: var(--font-size-label);
-    color: var(--color-text-muted);
-  }
-
-  @media (min-width: 64rem) {
+  /* La superposición de texto sobre la imagen sólo se activa a partir de
+     1280px: por debajo, la zona clara del archivo (su mitad izquierda) queda
+     demasiado estrecha al recortar y el texto caería sobre la fotografía. */
+  @media (min-width: 80rem) {
     .hero {
-      padding-block: var(--space-12) var(--space-13);
+      display: block;
+      /* Proporción natural de la imagen de marca: 2172×724 (≈3:1). */
+      min-block-size: min(33.33vw, 36rem);
     }
 
-    .hero__grid {
-      grid-template-columns: 1.15fr 1fr;
-      gap: var(--space-11);
+    .hero__media {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+    }
+
+    .hero__image {
+      aspect-ratio: auto;
+      block-size: 100%;
+      object-fit: cover;
+      /* La mitad izquierda de la imagen es clara y sostiene el texto; se ancla
+         a la derecha para que la fotografía y las líneas no se pierdan. */
+      object-position: right center;
+    }
+
+    .hero :global(.hero__container) {
+      display: flex;
+      align-items: center;
+      min-block-size: min(33.33vw, 36rem);
+      padding-block: var(--space-9);
+    }
+
+    .hero__content {
+      /* Zona clara de la imagen: el texto nunca la sobrepasa.
+         Medido en la web actual: bloque de ~565px sobre 1710. */
+      max-inline-size: min(38%, 35.5rem);
+    }
+
+    .hero__title {
+      margin-block-start: var(--space-5);
+    }
+
+    .hero__text {
+      /* En superposición el ancho lo fija la columna (≈565px como la
+         referencia), no la medida de lectura. */
+      max-inline-size: 100%;
+      margin-block-start: var(--space-6);
+    }
+
+    .hero__actions {
+      margin-block-start: var(--space-8);
     }
   }
 </style>

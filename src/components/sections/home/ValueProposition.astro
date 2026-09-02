@@ -2,10 +2,17 @@
 /**
  * Propuesta de valor.
  *
+ * En la web actual es una banda azul a sangre con las líneas FINOVA incrustadas
+ * y el texto centrado en blanco (medido: H2 ~31px, párrafo centrado de ~650px,
+ * banda de ~300px de alto en un viewport de 1710px).
+ *
  * Los cuatro conceptos se muestran sólo con su título: no se han recibido
- * descripciones y no se inventan. La lista está preparada para admitirlas.
+ * descripciones y no se inventan.
  */
+import { Image } from 'astro:assets';
+
 import Container from '@components/common/Container.astro';
+import bandImage from '@assets/images/home/banda-propuesta-valor.png';
 
 const pillars: readonly string[] = [
   'Negociamos por ti',
@@ -16,16 +23,25 @@ const pillars: readonly string[] = [
 ---
 
 <section class="value">
+  <div class="value__media">
+    <Image
+      class="value__image"
+      src={bandImage}
+      alt=""
+      widths={[768, 1200, 1600, 2172]}
+      sizes="100vw"
+      loading="lazy"
+    />
+  </div>
+
   <Container>
-    <div class="value__grid">
-      <div class="value__intro">
-        <h2>Comprar tu vivienda puede ser claro, seguro y sin estrés.</h2>
-        <p class="value__text">
-          Nos ocupamos de simplificar cada etapa del proceso hipotecario: analizamos tu perfil,
-          buscamos alternativas de financiación adecuadas a tu situación, gestionamos la
-          documentación y hacemos seguimiento de la operación hasta la firma.
-        </p>
-      </div>
+    <div class="value__content">
+      <h2 class="value__title">Comprar tu vivienda puede ser claro, seguro y sin estrés.</h2>
+      <p class="value__text">
+        Nos ocupamos de simplificar cada etapa del proceso hipotecario: analizamos tu perfil,
+        buscamos alternativas de financiación adecuadas a tu situación, gestionamos la documentación
+        y hacemos seguimiento de la operación hasta la firma.
+      </p>
 
       <ul class="value__list" role="list">
         {
@@ -45,60 +61,117 @@ const pillars: readonly string[] = [
 
 <style>
   .value {
-    padding-block: var(--section-spacing);
+    position: relative;
+    padding-block: var(--space-10);
+    color: var(--color-white);
+    background-color: var(--color-surface-dark-alt);
+    isolation: isolate;
   }
 
-  .value__grid {
-    display: grid;
-    gap: var(--space-9);
+  .value__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  /* Velo de contraste: en pantallas estrechas el recorte deja a la vista las
+     diagonales claras del archivo y el texto blanco perdería legibilidad. */
+  .value__media::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background-color: rgb(23 28 87 / 55%);
+  }
+
+  .value__image {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    /* Móvil: la mitad derecha del archivo es azul limpio. */
+    object-position: right center;
+  }
+
+  .value__content {
+    text-align: center;
+  }
+
+  .value__title {
+    /* Referencia: una sola línea de ~870px a 1710px de viewport. */
+    max-inline-size: 55rem;
+    margin-inline: auto;
+    color: var(--color-white);
   }
 
   .value__text {
-    max-inline-size: 58ch;
-    margin-block-start: var(--space-6);
-    font-size: var(--font-size-body-lg);
+    /* Referencia: bloque centrado de ~650px. */
+    max-inline-size: 41rem;
+    margin-block-start: var(--space-5);
+    margin-inline: auto;
+    font-size: var(--font-size-body-sm);
     line-height: var(--line-height-relaxed);
-    color: var(--color-text-muted);
+    color: var(--color-text-on-dark-muted);
   }
 
   .value__list {
     display: grid;
-    gap: 0;
+    gap: var(--space-4);
     padding: 0;
-    margin: 0;
+    margin-block-start: var(--space-9);
   }
 
   .value__item {
     display: flex;
-    gap: var(--space-5);
+    gap: var(--space-3);
     align-items: baseline;
-    padding-block: var(--space-5);
-    border-block-start: var(--border-default);
-  }
-
-  .value__item:last-child {
-    border-block-end: var(--border-default);
+    justify-content: center;
   }
 
   .value__index {
-    font-family: var(--font-heading);
     font-size: var(--font-size-label);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-wide);
-    color: var(--color-petrol);
+    color: var(--color-text-on-dark-muted);
   }
 
   .value__label {
-    font-size: var(--font-size-h4);
+    font-size: var(--font-size-body);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-navy);
+    color: var(--color-white);
+  }
+
+  @media (min-width: 48rem) {
+    .value__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-5) var(--space-7);
+    }
   }
 
   @media (min-width: 64rem) {
-    .value__grid {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-11);
-      align-items: start;
+    .value {
+      padding-block: var(--space-9) var(--space-10);
+    }
+
+    /* A partir de aquí se ve el archivo completo: diagonales a la izquierda y
+       azul limpio bajo el texto, como en la web actual. */
+    .value__image {
+      object-position: left center;
+    }
+
+    .value__media::after {
+      background-color: transparent;
+    }
+
+    .value__list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-6);
+      margin-block-start: var(--space-10);
+    }
+
+    .value__item {
+      flex-direction: column;
+      gap: var(--space-2);
+      align-items: center;
     }
   }
 </style>

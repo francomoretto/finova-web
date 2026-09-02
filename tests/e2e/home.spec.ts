@@ -33,7 +33,8 @@ test.describe('portada', () => {
     const steps = page.locator('#proceso .process__step');
 
     await expect(steps).toHaveCount(4);
-    await expect(steps.first()).toContainText('01');
+    // La web actual numera los pasos con dígitos sueltos dentro de un círculo.
+    await expect(steps.first()).toContainText('1');
     await expect(steps.first()).toContainText('Analizamos tu perfil');
     await expect(steps.last()).toContainText('Te acompañamos hasta la firma');
   });

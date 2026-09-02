@@ -2,8 +2,11 @@
 /**
  * Proceso de trabajo. Ancla `#proceso` (la cabecera enlaza a `/#proceso`).
  *
- * Desktop: cuatro columnas unidas por una regla superior continua.
- * Móvil:   secuencia vertical. Sin slider y sin JavaScript.
+ * Reproduce la sección de la web actual: título centrado y cuatro columnas
+ * centradas, cada una encabezada por un círculo azul de 50px con su número
+ * (medidas tomadas de la captura de referencia a 1710px).
+ *
+ * Móvil: secuencia vertical. Sin slider y sin JavaScript.
  */
 import Container from '@components/common/Container.astro';
 
@@ -15,22 +18,22 @@ interface Step {
 
 const steps: readonly Step[] = [
   {
-    number: '01',
+    number: '1',
     title: 'Analizamos tu perfil',
     text: 'Revisamos tu situación, necesidades y características de la operación.',
   },
   {
-    number: '02',
+    number: '2',
     title: 'Buscamos las mejores alternativas',
     text: 'Negociamos entre distintas entidades financieras en función de tu perfil y de las características de la operación.',
   },
   {
-    number: '03',
+    number: '3',
     title: 'Gestionamos el proceso',
     text: 'Nos ocupamos de la documentación, tasación y seguimiento de cada etapa.',
   },
   {
-    number: '04',
+    number: '4',
     title: 'Te acompañamos hasta la firma',
     text: 'Seguimos la operación hasta el momento de la firma de tu hipoteca.',
   },
@@ -45,7 +48,9 @@ const steps: readonly Step[] = [
       {
         steps.map((step) => (
           <li class="process__step">
-            <p class="process__number">{step.number}</p>
+            <p class="process__number" aria-hidden="true">
+              {step.number}
+            </p>
             <h3 class="process__step-title">{step.title}</h3>
             <p class="process__step-text">{step.text}</p>
           </li>
@@ -61,39 +66,51 @@ const steps: readonly Step[] = [
   }
 
   .process__title {
-    max-inline-size: 22ch;
+    /* Referencia: una sola línea de ~745px. */
+    max-inline-size: 48rem;
+    margin-inline: auto;
+    text-align: center;
   }
 
   .process__list {
     display: grid;
-    gap: var(--space-7);
+    gap: var(--space-8);
     padding: 0;
-    margin-block-start: var(--space-9);
+    margin-block-start: var(--space-10);
     list-style: none;
   }
 
   .process__step {
-    padding-block-start: var(--space-5);
-    border-block-start: var(--border-width) solid var(--color-border);
+    text-align: center;
   }
 
+  /* Círculo azul de 50px con el número, como en la web actual. */
   .process__number {
+    display: grid;
+    place-items: center;
+    inline-size: 3.125rem;
+    block-size: 3.125rem;
     max-inline-size: none;
-    font-family: var(--font-heading);
-    font-size: var(--font-size-h3);
-    font-weight: var(--font-weight-bold);
+    margin-inline: auto;
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
     line-height: 1;
-    color: var(--color-petrol);
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border-radius: var(--radius-pill);
   }
 
   .process__step-title {
-    margin-block-start: var(--space-4);
-    font-size: var(--font-size-h4);
+    margin-block-start: var(--space-5);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
   }
 
   .process__step-text {
-    max-inline-size: 38ch;
+    max-inline-size: 32ch;
     margin-block-start: var(--space-3);
+    margin-inline: auto;
     font-size: var(--font-size-body-sm);
     color: var(--color-text-muted);
   }
@@ -106,26 +123,9 @@ const steps: readonly Step[] = [
   }
 
   @media (min-width: 64rem) {
-    /* Una sola regla continua por encima de las cuatro columnas. */
     .process__list {
-      position: relative;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: var(--space-7);
-      padding-block-start: var(--space-5);
-    }
-
-    .process__list::before {
-      position: absolute;
-      inset-block-start: 0;
-      inset-inline: 0;
-      block-size: var(--border-width);
-      content: '';
-      background-color: var(--color-border);
-    }
-
-    .process__step {
-      padding-block-start: 0;
-      border-block-start: 0;
     }
   }
 </style>
