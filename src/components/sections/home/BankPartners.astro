@@ -2,11 +2,25 @@
 /**
  * Entidades financieras con las que trabaja FINOVA.
  *
- * Datos exclusivamente de `src/data/banks.ts`. Sin carrusel y sin JavaScript.
+ * Carrusel horizontal infinito resuelto SÓLO con CSS: sin librerías, sin
+ * JavaScript y sin controles.
  *
- * Los logotipos todavía no existen. Cuando lleguen, basta con rellenar el campo
- * `logo` en `banks.ts` y descomentar el bloque marcado más abajo: ni esta
- * sección ni `index.astro` cambian de estructura.
+ * Cómo funciona el bucle sin saltos:
+ *   - el track contiene DOS secuencias idénticas, una detrás de otra;
+ *   - la separación entre marcas es `padding-inline` de cada elemento, no un
+ *     `gap` del track, de modo que ambas secuencias miden exactamente lo mismo;
+ *   - la animación desplaza el track un −50 %, es decir, una secuencia exacta,
+ *     y al reiniciarse el fotograma coincide píxel a píxel con el inicial.
+ *
+ * La segunda secuencia es decorativa (`aria-hidden`): los lectores de pantalla
+ * leen la lista de entidades una sola vez.
+ *
+ * ⚠️ LOGOS: no disponemos de los logotipos de las entidades. No se descargan de
+ * internet ni se recrean. Mientras tanto se muestran los nombres con un
+ * tratamiento tipográfico limpio, dentro de un hueco de la misma altura que
+ * tendrá el logotipo (`--bank-slot-height`), para que la sustitución no altere
+ * la maquetación: bastará con rellenar `logo` en `src/data/banks.ts` y
+ * descomentar el bloque marcado más abajo.
  */
 import Container from '@components/common/Container.astro';
 import { BANKS } from '@data/banks';
@@ -15,21 +29,37 @@ import { BANKS } from '@data/banks';
 <section class="banks section--soft">
   <Container>
     <h2 class="banks__title">Entidades financieras con las que trabajamos</h2>
-
-    <ul class="banks__grid" role="list">
-      {
-        BANKS.map((bank) => (
-          <li class="banks__item">
-            {/*
-              Cuando exista `bank.logo`, sustituir el <span> por:
-                <img src={bank.logo} alt={bank.name} loading="lazy" width="120" height="40" />
-            */}
-            <span class="banks__name">{bank.name}</span>
-          </li>
-        ))
-      }
-    </ul>
   </Container>
+
+  <div class="banks__viewport">
+    <div class="banks__track">
+      <ul class="banks__sequence" role="list">
+        {
+          BANKS.map((bank) => (
+            <li class="banks__item">
+              {/*
+                Con `bank.logo` disponible, sustituir el <span> por:
+                  <img class="banks__logo" src={bank.logo} alt={bank.name}
+                       loading="lazy" width="160" height="56" />
+              */}
+              <span class="banks__name">{bank.name}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      {/* Copia visual para encadenar el bucle. No se anuncia dos veces. */}
+      <ul class="banks__sequence" role="list" aria-hidden="true">
+        {
+          BANKS.map((bank) => (
+            <li class="banks__item">
+              <span class="banks__name">{bank.name}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
 </section>
 
 <style>
@@ -41,48 +71,102 @@ import { BANKS } from '@data/banks';
     max-inline-size: 24ch;
   }
 
-  .banks__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
-    gap: var(--space-4);
-    padding: 0;
+  /* Alto del hueco de cada marca: hoy lo ocupa el nombre; mañana, el logotipo. */
+  .banks__viewport {
+    --bank-slot-height: 2.75rem;
+    --bank-gap: var(--space-7);
+    --marquee-duration: 28s;
+
     margin-block-start: var(--space-9);
+    overflow: hidden;
+    /* Difuminado en los extremos para que las marcas entren y salgan sin corte. */
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--space-8),
+      #000 calc(100% - var(--space-8)),
+      transparent 100%
+    );
+  }
+
+  .banks__track {
+    display: flex;
+    inline-size: max-content;
+    animation: banks-marquee var(--marquee-duration) linear infinite;
+  }
+
+  .banks__sequence {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
   }
 
   .banks__item {
     display: grid;
     place-items: center;
-    min-block-size: 5rem;
-    padding: var(--space-4);
-    text-align: center;
-    background-color: var(--color-background);
-    border: var(--border-default);
-    border-radius: var(--radius-md);
+    min-block-size: var(--bank-slot-height);
+    padding-inline: var(--bank-gap);
   }
 
   .banks__name {
-    font-size: var(--font-size-body-sm);
+    font-size: var(--font-size-body);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-navy);
+    color: var(--color-primary);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* Normaliza el hueco, nunca el logotipo: se mantiene su proporción. */
+  .banks__logo {
+    inline-size: auto;
+    max-inline-size: 11rem;
+    block-size: auto;
+    max-block-size: var(--bank-slot-height);
+    object-fit: contain;
+  }
+
+  @keyframes banks-marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      /* Exactamente una secuencia: el bucle no tiene salto. */
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Pausa al pasar el ratón o al entrar el foco: no rompe el bucle. */
+  .banks__viewport:hover .banks__track,
+  .banks__viewport:focus-within .banks__track {
+    animation-play-state: paused;
   }
 
   @media (min-width: 48rem) {
-    .banks__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: var(--space-5);
+    .banks__viewport {
+      --bank-slot-height: 3rem;
+      --bank-gap: var(--space-8);
+      --marquee-duration: 34s;
+    }
+
+    .banks__name {
+      font-size: var(--font-size-h3);
     }
   }
 
   @media (min-width: 64rem) {
-    .banks__grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+    .banks__viewport {
+      --bank-slot-height: 3.5rem;
+      --bank-gap: var(--space-10);
+      --marquee-duration: 40s;
     }
   }
 
-  /* Once entidades: 6 + 5 reparte mejor que dejar una fila casi vacía. */
-  @media (min-width: 90rem) {
-    .banks__grid {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+  /* Sin movimiento: el carrusel se detiene y queda visible la primera secuencia. */
+  @media (prefers-reduced-motion: reduce) {
+    .banks__track {
+      animation: none;
     }
   }
 </style>

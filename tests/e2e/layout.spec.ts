@@ -16,7 +16,6 @@ test.describe('cabecera y pie (desktop)', () => {
     const footer = page.getByRole('contentinfo');
     await expect(footer).toBeVisible();
     await expect(footer).toContainText('SOMOS FINOVA, S.L.');
-    await expect(footer).toContainText('Simplificamos decisiones complejas.');
     await expect(footer).toContainText(String(new Date().getFullYear()));
   });
 
@@ -53,6 +52,24 @@ test.describe('cabecera y pie (desktop)', () => {
 
     await page.goto('/aviso-legal/');
     await expect(nav.locator('[aria-current="page"]')).toHaveCount(0);
+  });
+
+  test('el pie identifica la sociedad una sola vez, bajo el logotipo', async ({ page }) => {
+    await page.goto('/');
+    const footer = page.locator('footer.site-footer');
+
+    // El claim desapareció y la identificación regulatoria no se repite abajo.
+    const text = await footer.innerText();
+    expect(text).not.toContain('Simplificamos decisiones complejas.');
+    expect(text.match(/SOMOS FINOVA, S\.L\./g)?.length ?? 0).toBe(1);
+
+    await expect(footer.locator('.site-footer__identity')).toContainText('E794');
+    await expect(footer.locator('.site-footer__identity')).toContainText('Nº 021');
+
+    // La franja inferior sólo lleva el copyright.
+    const bottom = footer.locator('.site-footer__legal');
+    await expect(bottom).toContainText('Todos los derechos reservados');
+    await expect(bottom).not.toContainText('Banco de España');
   });
 
   test('el pie enlaza las tres páginas legales', async ({ page }) => {

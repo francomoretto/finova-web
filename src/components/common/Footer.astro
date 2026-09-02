@@ -34,7 +34,13 @@ const year = new Date().getFullYear();
     <div class="site-footer__grid">
       <div class="site-footer__brand">
         <Logo tone="light" label="FINOVA" />
-        <p class="site-footer__claim">Simplificamos decisiones complejas.</p>
+        <p class="site-footer__identity">
+          {COMPANY.legalName}<br />
+          {
+            `Intermediario de Crédito Inmobiliario registrado en el Banco de España · ${COMPANY.registrations.bankOfSpain}`
+          }<br />
+          {`Asociado ANICI · Nº ${COMPANY.registrations.anici}`}
+        </p>
       </div>
 
       <nav class="site-footer__col" aria-label="Navegación del pie de página">
@@ -87,13 +93,6 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="site-footer__legal">
-      <p class="site-footer__regulatory">
-        {COMPANY.legalName}<br />
-        {
-          `Intermediario de Crédito Inmobiliario registrado en el Banco de España · ${COMPANY.registrations.bankOfSpain}`
-        }<br />
-        {`Asociado ANICI · Nº ${COMPANY.registrations.anici}`}
-      </p>
       <p class="site-footer__copyright">
         {`© ${year} ${COMPANY.brand}. Todos los derechos reservados.`}
       </p>
@@ -139,12 +138,12 @@ const year = new Date().getFullYear();
     --logo-height: 3.75rem;
   }
 
-  .site-footer__claim {
-    max-inline-size: 22ch;
-    margin-block-start: var(--space-4);
-    font-size: var(--font-size-body-lg);
-    line-height: var(--line-height-snug);
-    color: var(--color-white);
+  .site-footer__identity {
+    max-inline-size: 34ch;
+    margin-block-start: var(--space-5);
+    font-size: var(--font-size-label);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-on-dark-muted);
   }
 
   .site-footer__heading {
@@ -183,7 +182,7 @@ const year = new Date().getFullYear();
     border-radius: var(--radius-xs);
   }
 
-  /* --- Franja regulatoria ------------------------------------------------ */
+  /* --- Franja inferior --------------------------------------------------- */
 
   .site-footer__legal {
     padding-block-start: var(--space-7);
@@ -191,7 +190,6 @@ const year = new Date().getFullYear();
     border-block-start: var(--border-width) solid var(--color-border-on-dark);
   }
 
-  .site-footer__regulatory,
   .site-footer__copyright {
     max-inline-size: none;
     font-size: var(--font-size-label);
@@ -199,27 +197,11 @@ const year = new Date().getFullYear();
     color: var(--color-text-on-dark-muted);
   }
 
-  .site-footer__copyright {
-    margin-block-start: var(--space-5);
-  }
-
   /* --- Tablet: 2×2 ------------------------------------------------------- */
 
   @media (min-width: 48rem) {
     .site-footer__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .site-footer__legal {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-5) var(--space-7);
-      align-items: baseline;
-      justify-content: space-between;
-    }
-
-    .site-footer__copyright {
-      margin-block-start: 0;
     }
   }
 

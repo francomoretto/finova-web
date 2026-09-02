@@ -66,12 +66,77 @@ test.describe('portada', () => {
     }
   });
 
-  test('se listan las once entidades financieras', async ({ page }) => {
-    const banks = page.locator('.banks__item');
+  test('la propuesta de valor es una banda breve, sin los cuatro pilares', async ({ page }) => {
+    const value = page.locator('.value');
 
-    await expect(banks).toHaveCount(11);
-    await expect(banks.filter({ hasText: 'Caja Rural de Asturias' })).toHaveCount(1);
-    await expect(banks.filter({ hasText: 'Banco Pichincha' })).toHaveCount(1);
+    await expect(value).toContainText('Comprar tu vivienda puede ser claro, seguro y sin estrés.');
+
+    // La lista de pilares desapareció por completo de esta sección.
+    await expect(value.locator('ul')).toHaveCount(0);
+    const text = (await value.innerText()).toLowerCase();
+    for (const pillar of [
+      'negociamos por ti',
+      'gestión documental',
+      'tasación y seguimiento',
+      'acompañamiento hasta la firma',
+    ]) {
+      expect(text).not.toContain(pillar);
+    }
+  });
+
+  test('las once entidades se anuncian una sola vez', async ({ page }) => {
+    // La primera secuencia es la real; la segunda sólo encadena el bucle.
+    const sequences = page.locator('.banks__sequence');
+    await expect(sequences).toHaveCount(2);
+
+    const announced = sequences.first().locator('li');
+    await expect(announced).toHaveCount(11);
+    await expect(announced.filter({ hasText: 'Caja Rural de Asturias' })).toHaveCount(1);
+    await expect(announced.filter({ hasText: 'Banco Pichincha' })).toHaveCount(1);
+
+    await expect(sequences.nth(1)).toHaveAttribute('aria-hidden', 'true');
+    await expect(sequences.first()).not.toHaveAttribute('aria-hidden', /.*/);
+  });
+
+  test('el carrusel tiene un track animado y no desborda la página', async ({ page }) => {
+    const track = page.locator('.banks__track');
+    await expect(track).toHaveCount(1);
+
+    const info = await page.evaluate(() => {
+      const t = document.querySelector('.banks__track');
+      const seqs = [...document.querySelectorAll('.banks__sequence')];
+      if (!t || seqs.length !== 2) return null;
+      const cs = getComputedStyle(t);
+      return {
+        iterations: cs.animationIterationCount,
+        timing: cs.animationTimingFunction,
+        viewportOverflow: getComputedStyle(t.parentElement!).overflow,
+        // Las dos secuencias deben medir lo mismo: si no, el bucle da un salto.
+        equalHalves:
+          Math.abs(
+            seqs[0]!.getBoundingClientRect().width - seqs[1]!.getBoundingClientRect().width,
+          ) < 1,
+      };
+    });
+
+    expect(info).not.toBeNull();
+    expect(info!.iterations).toBe('infinite');
+    expect(info!.timing).toBe('linear');
+    expect(info!.viewportOverflow).toBe('hidden');
+    expect(info!.equalHalves).toBe(true);
+  });
+
+  test('el CTA del simulador no va dentro de una tarjeta', async ({ page }) => {
+    await expect(page.locator('.simulator-cta__panel')).toHaveCount(0);
+
+    const cta = page.locator('.simulator-cta');
+    await expect(
+      cta.getByRole('heading', { name: 'Calcula una estimación de tu hipoteca' }),
+    ).toBeVisible();
+    await expect(cta.getByRole('link', { name: 'Simular mi hipoteca' })).toHaveAttribute(
+      'href',
+      '/simulador-hipoteca/',
+    );
   });
 
   test('el bloque destacado lleva al simulador', async ({ page }) => {
@@ -104,9 +169,26 @@ test.describe('portada', () => {
     );
   });
 
-  test('el envío está desactivado mientras no haya endpoint', async ({ page }) => {
+  test('el envío está desactivado mientras no haya endpoint, sin aviso técnico visible', async ({
+    page,
+  }) => {
     await expect(page.locator('.contact__submit')).toBeDisabled();
     await expect(page.locator('.contact__form')).not.toHaveAttribute('action', /.+/);
+    await expect(page.getByText('El envío del formulario todavía no está activo')).toHaveCount(0);
+  });
+
+  test('protección de datos vive en la columna informativa, no bajo el formulario', async ({
+    page,
+  }) => {
+    const privacy = page.locator('.privacy');
+    await expect(privacy).toHaveCount(1);
+    await expect(page.locator('.contact__info .privacy')).toHaveCount(1);
+    await expect(page.locator('.contact__panel .privacy')).toHaveCount(0);
+
+    await expect(privacy).toContainText('Responsable');
+    await expect(privacy).toContainText('SOMOS FINOVA, S.L.');
+    await expect(privacy).toContainText('B88977665');
+    await expect(privacy).toContainText('Calle Melquiades Álvarez, 26, 1º A, 33003 Oviedo');
   });
 
   test('la portada no carga JavaScript externo ni React', async ({ page }) => {

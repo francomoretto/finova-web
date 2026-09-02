@@ -2,24 +2,14 @@
 /**
  * Propuesta de valor.
  *
- * En la web actual es una banda azul a sangre con las líneas FINOVA incrustadas
- * y el texto centrado en blanco (medido: H2 ~31px, párrafo centrado de ~650px,
- * banda de ~300px de alto en un viewport de 1710px).
- *
- * Los cuatro conceptos se muestran sólo con su título: no se han recibido
- * descripciones y no se inventan.
+ * Banda azul a sangre con las líneas FINOVA incrustadas en el propio archivo y
+ * el texto centrado en blanco, como en la web actual. Es una banda
+ * institucional breve: sólo título y párrafo.
  */
 import { Image } from 'astro:assets';
 
 import Container from '@components/common/Container.astro';
 import bandImage from '@assets/images/home/banda-propuesta-valor.png';
-
-const pillars: readonly string[] = [
-  'Negociamos por ti',
-  'Gestión documental',
-  'Tasación y seguimiento',
-  'Acompañamiento hasta la firma',
-];
 ---
 
 <section class="value">
@@ -42,19 +32,6 @@ const pillars: readonly string[] = [
         buscamos alternativas de financiación adecuadas a tu situación, gestionamos la documentación
         y hacemos seguimiento de la operación hasta la firma.
       </p>
-
-      <ul class="value__list" role="list">
-        {
-          pillars.map((pillar, index) => (
-            <li class="value__item">
-              <span class="value__index" aria-hidden="true">
-                {String(index + 1).padStart(2, '0')}
-              </span>
-              <span class="value__label">{pillar}</span>
-            </li>
-          ))
-        }
-      </ul>
     </div>
   </Container>
 </section>
@@ -62,7 +39,7 @@ const pillars: readonly string[] = [
 <style>
   .value {
     position: relative;
-    padding-block: var(--space-10);
+    padding-block: var(--space-9);
     color: var(--color-white);
     background-color: var(--color-surface-dark-alt);
     isolation: isolate;
@@ -113,43 +90,9 @@ const pillars: readonly string[] = [
     color: var(--color-text-on-dark-muted);
   }
 
-  .value__list {
-    display: grid;
-    gap: var(--space-4);
-    padding: 0;
-    margin-block-start: var(--space-9);
-  }
-
-  .value__item {
-    display: flex;
-    gap: var(--space-3);
-    align-items: baseline;
-    justify-content: center;
-  }
-
-  .value__index {
-    font-size: var(--font-size-label);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--letter-spacing-wide);
-    color: var(--color-text-on-dark-muted);
-  }
-
-  .value__label {
-    font-size: var(--font-size-body);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-white);
-  }
-
-  @media (min-width: 48rem) {
-    .value__list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-5) var(--space-7);
-    }
-  }
-
   @media (min-width: 64rem) {
     .value {
-      padding-block: var(--space-9) var(--space-10);
+      padding-block: var(--space-10);
     }
 
     /* A partir de aquí se ve el archivo completo: diagonales a la izquierda y
@@ -160,18 +103,6 @@ const pillars: readonly string[] = [
 
     .value__media::after {
       background-color: transparent;
-    }
-
-    .value__list {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: var(--space-6);
-      margin-block-start: var(--space-10);
-    }
-
-    .value__item {
-      flex-direction: column;
-      gap: var(--space-2);
-      align-items: center;
     }
   }
 </style>

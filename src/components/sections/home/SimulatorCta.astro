@@ -1,6 +1,9 @@
 ---
 /**
- * Bloque destacado que dirige al simulador.
+ * Franja CTA hacia el simulador, entre entidades y contacto.
+ *
+ * Sin tarjeta: forma parte del flujo de la página. Las líneas FINOVA entran
+ * parcialmente por el extremo derecho, recortadas por la propia sección.
  * No contiene lógica de cálculo: sólo enlaza a `/simulador-hipoteca/`.
  */
 import BrandLines from '@components/common/BrandLines.astro';
@@ -9,10 +12,10 @@ import Container from '@components/common/Container.astro';
 ---
 
 <section class="simulator-cta">
-  <Container>
-    <div class="simulator-cta__panel">
-      <BrandLines tone="dark" position="bottom-end" class="simulator-cta__lines" />
+  <BrandLines tone="dark" position="top-end" class="simulator-cta__lines" />
 
+  <Container>
+    <div class="simulator-cta__layout">
       <div class="simulator-cta__content">
         <h2 class="simulator-cta__title">Calcula una estimación de tu hipoteca</h2>
         <p class="simulator-cta__text">
@@ -30,28 +33,26 @@ import Container from '@components/common/Container.astro';
 
 <style>
   .simulator-cta {
-    padding-block: var(--section-spacing);
-  }
-
-  .simulator-cta__panel {
     position: relative;
-    display: grid;
-    gap: var(--space-7);
-    padding: var(--space-9) var(--space-7);
+    padding-block: var(--section-spacing);
+    /* Recorta las líneas que asoman por el borde: nunca desbordan la página. */
     overflow: hidden;
-    background-color: var(--color-background-soft);
-    border: var(--border-default);
-    border-radius: var(--radius-lg);
     isolation: isolate;
   }
 
-  .simulator-cta__panel :global(.simulator-cta__lines) {
-    inline-size: clamp(3.5rem, 6vw, 5.5rem);
-    opacity: 0.5;
+  /* Decoración: entra parcialmente por la derecha, fuera del texto. */
+  .simulator-cta :global(.simulator-cta__lines) {
+    inline-size: clamp(3rem, 7vw, 6.5rem);
+    opacity: 0.16;
+  }
+
+  .simulator-cta__layout {
+    display: grid;
+    gap: var(--space-7);
   }
 
   .simulator-cta__title {
-    max-inline-size: 18ch;
+    max-inline-size: 20ch;
   }
 
   .simulator-cta__text {
@@ -61,12 +62,21 @@ import Container from '@components/common/Container.astro';
     color: var(--color-text-muted);
   }
 
+  .simulator-cta__action {
+    display: grid;
+    justify-items: start;
+  }
+
   @media (min-width: 64rem) {
-    .simulator-cta__panel {
+    .simulator-cta__layout {
       grid-template-columns: 1fr auto;
-      gap: var(--space-9);
+      gap: var(--space-10);
       align-items: center;
-      padding: var(--space-10) var(--space-10);
+    }
+
+    .simulator-cta :global(.simulator-cta__lines) {
+      /* Se aparta del texto y del botón. */
+      inset-inline-end: calc(var(--space-4) * -1);
     }
   }
 </style>

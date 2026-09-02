@@ -2,10 +2,18 @@
 /**
  * Contacto. Ancla `#contacto`.
  *
- * ⚠️ El formulario NO envía todavía: la decisión de runtime de producción
- * (static + endpoint PHP vs. Astro SSR) sigue abierta, así que no hay endpoint
- * al que apuntar. El botón de envío está deshabilitado y se explica por qué;
- * no se simula ningún envío correcto ni se usa `mailto:` como sustituto.
+ * Composición a dos columnas:
+ *   - izquierda (≈40 %): título, texto, email, información regulatoria y la
+ *     capa informativa de protección de datos. Concentra todo lo informativo.
+ *   - derecha (≈60 %): únicamente el formulario.
+ *
+ * ⚠️ ESTADO DEL ENVÍO — no visible para el usuario, a propósito.
+ * El formulario todavía NO envía: falta decidir el runtime de producción
+ * (static + endpoint PHP vs. Astro SSR), así que no hay endpoint al que
+ * apuntar. Por eso el `<form>` no tiene `action` y el botón está `disabled`.
+ * No se simula ningún envío correcto ni se usa `mailto:` como sustituto.
+ * Al implementar SMTP: añadir `action` y `method`, y quitar el `disabled`.
+ * Ver `src/lib/email/README.md`.
  *
  * Los límites de los campos salen de `CONTACT_LIMITS` (el mismo módulo que
  * alimenta el schema de Zod), de modo que la validación del navegador y la del
@@ -32,7 +40,7 @@ const contactItems = [
 <section class="contact" id="contacto">
   <Container>
     <div class="contact__grid">
-      <div class="contact__intro">
+      <div class="contact__info">
         <h2>Hablemos de tu hipoteca</h2>
         <p class="contact__lead">
           Cuéntanos tu caso y estudiamos la operación sin compromiso. Analizamos tu perfil y te
@@ -53,14 +61,37 @@ const contactItems = [
         </ul>
 
         <p class="contact__regulatory">
-          {COMPANY.legalName} — Intermediario de Crédito Inmobiliario registrado en el Banco de España
-          · {COMPANY.registrations.bankOfSpain}<br />
-          Asociado ANICI · Nº {COMPANY.registrations.anici}
+          {
+            `${COMPANY.legalName} — Intermediario de Crédito Inmobiliario registrado en el Banco de España · ${COMPANY.registrations.bankOfSpain}`
+          }<br />
+          {`Asociado ANICI · Nº ${COMPANY.registrations.anici}`}
         </p>
+
+        <section class="privacy" aria-labelledby="privacy-heading">
+          <h3 class="privacy__heading" id="privacy-heading">Protección de datos</h3>
+
+          <dl class="privacy__list">
+            <dt>Responsable</dt>
+            <dd>
+              {`${COMPANY.legalName} · NIF ${COMPANY.nif}`}<br />
+              {
+                `${COMPANY.address.street}, ${COMPANY.address.postalCode} ${COMPANY.address.city} (${COMPANY.address.region})`
+              }<br />
+              <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+            </dd>
+          </dl>
+
+          <p class="privacy__pending">
+            El resto de la información básica sobre protección de datos (finalidad, legitimación,
+            destinatarios, plazos de conservación y ejercicio de derechos) está pendiente de la
+            redacción y revisión jurídica. Se publicará aquí y en la{' '}
+            <a href="/politica-privacidad/">Política de Privacidad</a> antes de activar el envío.
+          </p>
+        </section>
       </div>
 
       <div class="contact__panel">
-        <form class="contact__form" aria-describedby="contact-status">
+        <form class="contact__form">
           <div class="field">
             <label class="field__label" for="contact-name">Nombre</label>
             <input
@@ -102,8 +133,9 @@ const contactItems = [
               aria-describedby="contact-phone-hint"
             />
             <p class="field__hint" id="contact-phone-hint">
-              Entre {CONTACT_LIMITS.phone.min} y {CONTACT_LIMITS.phone.max} dígitos. Puedes incluir el
-              prefijo internacional.
+              {
+                `Entre ${CONTACT_LIMITS.phone.min} y ${CONTACT_LIMITS.phone.max} dígitos. Puedes incluir el prefijo internacional.`
+              }
             </p>
           </div>
 
@@ -126,7 +158,7 @@ const contactItems = [
               class="field__control field__control--textarea"
               id="contact-message"
               name="message"
-              rows="5"
+              rows="6"
               minlength={CONTACT_LIMITS.message.min}
               maxlength={CONTACT_LIMITS.message.max}
               required></textarea>
@@ -163,37 +195,10 @@ const contactItems = [
           </div>
 
           <div class="field--full">
+            {/* `disabled` hasta que exista endpoint de envío (ver cabecera). */}
             <button class="contact__submit" type="submit" disabled>Enviar consulta</button>
           </div>
-
-          <p class="contact__status placeholder-note field--full" id="contact-status">
-            El envío del formulario todavía no está activo: queda pendiente de definir el entorno de
-            ejecución en producción. Hasta entonces, el botón permanece deshabilitado para no dar
-            por enviada una consulta que no llegaría a su destino.
-          </p>
         </form>
-
-        <section class="privacy" aria-labelledby="privacy-heading">
-          <h3 class="privacy__heading" id="privacy-heading">Protección de datos</h3>
-
-          <dl class="privacy__list">
-            <dt>Responsable</dt>
-            <dd>
-              {`${COMPANY.legalName} · NIF ${COMPANY.nif}`}<br />
-              {
-                `${COMPANY.address.street}, ${COMPANY.address.postalCode} ${COMPANY.address.city} (${COMPANY.address.region})`
-              }<br />
-              <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
-            </dd>
-          </dl>
-
-          <p class="privacy__pending">
-            El resto de la información básica sobre protección de datos (finalidad, legitimación,
-            destinatarios, plazos de conservación y ejercicio de derechos) está pendiente de la
-            redacción y revisión jurídica. Se publicará aquí y en la
-            <a href="/politica-privacidad/">Política de Privacidad</a> antes de activar el envío.
-          </p>
-        </section>
       </div>
     </div>
   </Container>
@@ -202,6 +207,7 @@ const contactItems = [
 <style>
   .contact {
     padding-block: var(--section-spacing);
+    background-color: var(--color-background-soft);
   }
 
   .contact__grid {
@@ -212,21 +218,13 @@ const contactItems = [
   .contact__lead {
     max-inline-size: 46ch;
     margin-block-start: var(--space-5);
-    font-size: var(--font-size-body-lg);
+    font-size: var(--font-size-body-sm);
     line-height: var(--line-height-relaxed);
     color: var(--color-text-muted);
   }
 
-  .contact__regulatory {
-    max-inline-size: 46ch;
-    margin-block-start: var(--space-9);
-    font-size: var(--font-size-label);
-    line-height: var(--line-height-relaxed);
-    color: var(--color-text-muted);
-  }
+  /* --- Datos de contacto -------------------------------------------------- */
 
-  /* En la web actual el formulario va directamente sobre el fondo blanco,
-     sin tarjeta: sólo los campos tienen borde. */
   .contact__items {
     display: grid;
     gap: var(--space-4);
@@ -241,9 +239,9 @@ const contactItems = [
   }
 
   .contact__icon {
+    flex-shrink: 0;
     inline-size: 2.25rem;
     block-size: 2.25rem;
-    flex-shrink: 0;
   }
 
   .contact__item-link {
@@ -258,112 +256,18 @@ const contactItems = [
     text-underline-offset: 0.25em;
   }
 
-  .contact__form {
-    display: grid;
-    gap: var(--space-5);
-  }
-
-  .field {
-    display: grid;
-    gap: var(--space-2);
-  }
-
-  .field__label {
-    font-size: var(--font-size-body-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-navy);
-  }
-
-  .field__optional {
-    font-weight: var(--font-weight-regular);
-    color: var(--color-text-muted);
-  }
-
-  .field__control {
-    min-block-size: var(--tap-target-min);
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--font-size-body);
-    color: var(--color-text);
-    background-color: var(--color-background);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius-sm);
-    transition: var(--transition-colors);
-  }
-
-  .field__control:hover {
-    border-color: var(--color-text-muted);
-  }
-
-  .field__control:focus-visible {
-    border-color: var(--color-focus);
-    outline: var(--focus-ring-width) solid var(--color-focus);
-    outline-offset: 1px;
-  }
-
-  .field__control--textarea {
-    min-block-size: 8rem;
-    resize: vertical;
-  }
-
-  .field__hint {
-    max-inline-size: none;
+  .contact__regulatory {
+    max-inline-size: 46ch;
+    margin-block-start: var(--space-7);
     font-size: var(--font-size-label);
+    line-height: var(--line-height-relaxed);
     color: var(--color-text-muted);
-  }
-
-  /* Cebo anti-spam: fuera de pantalla, nunca `display: none`. */
-  .honeypot {
-    position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  .consent {
-    display: flex;
-    gap: var(--space-3);
-    align-items: flex-start;
-  }
-
-  .consent__input {
-    /* 24px: mínimo de WCAG 2.2 · 2.5.8 (Target Size, AA). */
-    inline-size: 1.5rem;
-    block-size: 1.5rem;
-    margin-block-start: 0.05rem;
-    accent-color: var(--color-primary);
-    flex-shrink: 0;
-  }
-
-  .consent__label {
-    font-size: var(--font-size-body-sm);
-    color: var(--color-text-muted);
-  }
-
-  .contact__submit {
-    inline-size: 100%;
-    min-block-size: var(--tap-target-min);
-    padding: var(--space-4) var(--space-8);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-inverse);
-    background-color: var(--color-primary);
-    border-radius: var(--radius-sm);
-    transition: var(--transition-colors);
-  }
-
-  .contact__submit:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  .contact__status {
-    max-inline-size: none;
   }
 
   /* --- Capa informativa de privacidad ------------------------------------ */
 
   .privacy {
+    max-inline-size: 46ch;
     padding-block-start: var(--space-6);
     margin-block-start: var(--space-7);
     border-block-start: var(--border-default);
@@ -402,10 +306,120 @@ const contactItems = [
     color: var(--color-text-muted);
   }
 
+  /* --- Formulario --------------------------------------------------------- */
+
+  .contact__panel {
+    padding: var(--space-7);
+    background-color: var(--color-background);
+    border: var(--border-default);
+    border-radius: var(--radius-lg);
+  }
+
+  .contact__form {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .field__label {
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-navy);
+  }
+
+  .field__optional {
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-muted);
+  }
+
+  .field__control {
+    min-block-size: 3rem;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-body);
+    color: var(--color-text);
+    background-color: var(--color-background);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-colors);
+  }
+
+  .field__control:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  .field__control:focus-visible {
+    border-color: var(--color-focus);
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: 1px;
+  }
+
+  .field__control--textarea {
+    min-block-size: 10rem;
+    resize: vertical;
+  }
+
+  .field__hint {
+    max-inline-size: none;
+    font-size: var(--font-size-label);
+    color: var(--color-text-muted);
+  }
+
+  /* Cebo anti-spam: fuera de pantalla, nunca `display: none`. */
+  .honeypot {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .consent {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .consent__input {
+    /* 24px: mínimo de WCAG 2.2 · 2.5.8 (Target Size, AA). */
+    flex-shrink: 0;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    margin-block-start: 0.05rem;
+    accent-color: var(--color-primary);
+  }
+
+  .consent__label {
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-muted);
+  }
+
+  .contact__submit {
+    inline-size: 100%;
+    min-block-size: var(--tap-target-min);
+    padding: var(--space-4) var(--space-8);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-colors);
+  }
+
+  .contact__submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
   @media (min-width: 48rem) {
     .contact__form {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--space-5) var(--space-6);
+      /* Cada campo mantiene su alto: la pista del teléfono no estira el de al lado. */
+      align-items: start;
     }
 
     .field--full {
@@ -415,9 +429,14 @@ const contactItems = [
 
   @media (min-width: 64rem) {
     .contact__grid {
-      grid-template-columns: 1fr 1.35fr;
+      /* ≈40 % / 60 %. */
+      grid-template-columns: minmax(0, 0.67fr) minmax(0, 1fr);
       gap: var(--space-11);
       align-items: start;
+    }
+
+    .contact__panel {
+      padding: var(--space-9);
     }
   }
 </style>
