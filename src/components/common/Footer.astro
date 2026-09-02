@@ -1,130 +1,228 @@
 ---
-/** Pie de página: datos legales confirmados y navegación secundaria. */
+/**
+ * Pie de página de FINOVA.
+ *
+ * Desktop: 4 columnas · Tablet: 2×2 · Móvil: 1 columna.
+ *
+ * El fondo está preparado para recibir el recurso gráfico de líneas de la
+ * marca sin tocar el markup: basta con dar valor a `--footer-pattern` en el
+ * bloque señalado más abajo.
+ */
 import Container from '@components/common/Container.astro';
+import Logo from '@components/common/Logo.astro';
 import { COMPANY } from '@data/company';
-import { SERVICES } from '@data/services';
+import { legalNavigation, mainNavigation, serviceNavigation } from '@data/navigation';
 
 const year = new Date().getFullYear();
-
-const legalLinks = [
-  { href: '/aviso-legal/', label: 'Aviso legal' },
-  { href: '/politica-privacidad/', label: 'Política de privacidad' },
-  { href: '/politica-cookies/', label: 'Política de cookies' },
-];
 ---
 
 <footer class="site-footer">
+  <div class="site-footer__decor" aria-hidden="true"></div>
+
   <Container>
     <div class="site-footer__grid">
-      <div class="site-footer__block">
-        <p class="site-footer__brand">{COMPANY.brand}</p>
-        <p class="site-footer__text">{COMPANY.activity}</p>
-        <address class="site-footer__address">
-          {COMPANY.legalName} · NIF {COMPANY.nif}<br />
-          {COMPANY.address.street}<br />
-          {COMPANY.address.postalCode}
-          {COMPANY.address.city} ({COMPANY.address.region})<br />
-          <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
-        </address>
+      <div class="site-footer__brand">
+        <Logo tone="light" />
+        <p class="site-footer__claim">Simplificamos decisiones complejas.</p>
       </div>
 
-      <nav class="site-footer__block" aria-label="Servicios">
-        <h2 class="site-footer__heading">Servicios</h2>
-        <ul role="list" class="site-footer__list">
+      <nav class="site-footer__col" aria-label="Navegación del pie de página">
+        <h2 class="site-footer__heading">Navegación</h2>
+        <ul class="site-footer__list" role="list">
           {
-            SERVICES.map((service) => (
+            mainNavigation.map((item) => (
               <li>
-                <a href={service.href}>{service.navLabel}</a>
+                <a class="site-footer__link" href={item.href}>
+                  {item.label}
+                </a>
               </li>
             ))
           }
-          <li><a href="/simulador-hipoteca/">Simulador de hipoteca</a></li>
         </ul>
       </nav>
 
-      <nav class="site-footer__block" aria-label="Información legal">
-        <h2 class="site-footer__heading">Legal</h2>
-        <ul role="list" class="site-footer__list">
+      <nav class="site-footer__col" aria-label="Servicios">
+        <h2 class="site-footer__heading">Servicios</h2>
+        <ul class="site-footer__list" role="list">
           {
-            legalLinks.map((link) => (
+            serviceNavigation.map((item) => (
               <li>
-                <a href={link.href}>{link.label}</a>
+                <a class="site-footer__link" href={item.href}>
+                  {item.label}
+                </a>
               </li>
             ))
           }
         </ul>
       </nav>
+
+      <div class="site-footer__col">
+        <h2 class="site-footer__heading">Contacto e información legal</h2>
+        <ul class="site-footer__list" role="list">
+          <li>
+            <a class="site-footer__link" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+          </li>
+          {
+            legalNavigation.map((item) => (
+              <li>
+                <a class="site-footer__link" href={item.href}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
 
-    <p class="site-footer__legal">
-      Intermediario de Crédito Inmobiliario inscrito en el Registro del Banco de España con el
-      número {COMPANY.registrations.bankOfSpain}. Asociado ANICI nº {COMPANY.registrations.anici}.
-    </p>
-
-    <p class="site-footer__copyright">
-      © {year}
-      {COMPANY.legalName}. Todos los derechos reservados.
-    </p>
+    <div class="site-footer__legal">
+      <p class="site-footer__regulatory">
+        {COMPANY.legalName}<br />
+        Intermediario de Crédito Inmobiliario registrado en el Banco de España ·
+        {COMPANY.registrations.bankOfSpain}<br />
+        Asociado ANICI · Nº {COMPANY.registrations.anici}
+      </p>
+      <p class="site-footer__copyright">
+        © {year}
+        {COMPANY.brand}. Todos los derechos reservados.
+      </p>
+    </div>
   </Container>
 </footer>
 
 <style>
   .site-footer {
-    padding-block: var(--space-8) var(--space-6);
+    /* ── Fondo ──────────────────────────────────────────────────────────
+       Degradado muy sutil entre el azul principal y el azul marino.
+       Para añadir después el recurso gráfico de líneas de la marca basta con
+       dar valor a `--footer-pattern` aquí; el markup no cambia:
+         --footer-pattern: url('/brand/footer-lines.svg');
+       ------------------------------------------------------------------ */
+    --footer-pattern: none;
+
+    position: relative;
+    padding-block: var(--space-12) var(--space-9);
     margin-block-start: var(--section-spacing);
-    background-color: var(--color-background-soft);
-    border-block-start: var(--border-default);
+    color: var(--color-white);
+    background-color: var(--color-surface-dark);
+    background-image: linear-gradient(
+      160deg,
+      var(--color-surface-dark) 0%,
+      var(--color-surface-dark-alt) 100%
+    );
+    isolation: isolate;
   }
+
+  /* Capa decorativa: existe desde ya para no tocar el markup más adelante. */
+  .site-footer__decor {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--footer-pattern);
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: cover;
+    pointer-events: none;
+  }
+
+  /* --- Rejilla ----------------------------------------------------------- */
 
   .site-footer__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: var(--space-6);
+    grid-template-columns: 1fr;
+    gap: var(--space-9) var(--space-7);
   }
 
-  .site-footer__brand {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-navy);
-  }
-
-  .site-footer__text,
-  .site-footer__address {
-    font-size: var(--font-size-sm);
-    font-style: normal;
-    color: var(--color-text-muted);
-  }
-
-  .site-footer__address {
-    margin-block-start: var(--space-3);
-    line-height: var(--line-height-relaxed);
+  .site-footer__claim {
+    max-inline-size: 22ch;
+    margin-block-start: var(--space-4);
+    font-size: var(--font-size-body-lg);
+    line-height: var(--line-height-snug);
+    color: var(--color-white);
   }
 
   .site-footer__heading {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-label);
     font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--letter-spacing-wide);
+    letter-spacing: var(--letter-spacing-wider);
     text-transform: uppercase;
-    color: var(--color-navy);
+    color: var(--color-text-on-dark-muted);
   }
 
   .site-footer__list {
     display: grid;
-    gap: var(--space-2);
-    margin-block-start: var(--space-3);
-    font-size: var(--font-size-sm);
+    gap: var(--space-1);
+    padding: 0;
+    margin-block-start: var(--space-4);
   }
 
-  .site-footer__legal,
+  .site-footer__link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-target-min);
+    font-size: var(--font-size-body-sm);
+    color: var(--color-white);
+    text-decoration: none;
+  }
+
+  .site-footer__link:hover {
+    color: var(--color-white);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .site-footer__link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus-on-dark);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-xs);
+  }
+
+  /* --- Franja regulatoria ------------------------------------------------ */
+
+  .site-footer__legal {
+    padding-block-start: var(--space-7);
+    margin-block-start: var(--space-10);
+    border-block-start: var(--border-width) solid var(--color-border-on-dark);
+  }
+
+  .site-footer__regulatory,
   .site-footer__copyright {
     max-inline-size: none;
-    margin-block-start: var(--space-6);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
+    font-size: var(--font-size-label);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-on-dark-muted);
   }
 
   .site-footer__copyright {
-    margin-block-start: var(--space-2);
+    margin-block-start: var(--space-5);
+  }
+
+  /* --- Tablet: 2×2 ------------------------------------------------------- */
+
+  @media (min-width: 48rem) {
+    .site-footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .site-footer__legal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-5) var(--space-7);
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .site-footer__copyright {
+      margin-block-start: 0;
+    }
+  }
+
+  /* --- Desktop: 4 columnas ----------------------------------------------- */
+
+  @media (min-width: 64rem) {
+    .site-footer__grid {
+      grid-template-columns: 1.4fr 1fr 1.4fr 1.2fr;
+      gap: var(--space-7);
+    }
   }
 </style>

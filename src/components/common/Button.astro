@@ -1,29 +1,62 @@
 ---
 /**
- * Botón / enlace de acción.
- * Renderiza <a> cuando recibe `href` y <button> en caso contrario, para no
+ * Botón / enlace de acción de FINOVA.
+ *
+ * Renderiza `<a>` cuando recibe `href` y `<button>` en caso contrario, para no
  * romper la semántica ni la navegación por teclado.
+ *
+ * `disabled` sólo aplica a `<button>`: un enlace deshabilitado no existe en
+ * HTML; si una acción no está disponible, no se pinta el enlace.
  */
 interface Props {
+  /** Si se indica, el componente se renderiza como enlace. */
   href?: string;
-  variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'text';
+  size?: 'default' | 'large';
+  /** Sólo como `<button>`. */
   type?: 'button' | 'submit' | 'reset';
+  /** Sólo como `<button>`. */
+  disabled?: boolean;
+  /** Sólo como enlace. Con `_blank` se añade `rel` seguro automáticamente. */
+  target?: '_blank' | '_self';
+  /** Nombre accesible cuando el texto visible no basta. */
+  'aria-label'?: string;
+  /** Marca el enlace como página actual. */
+  'aria-current'?: 'page';
   class?: string;
 }
 
-const { href, variant = 'primary', size = 'md', type = 'button', class: className } = Astro.props;
+const {
+  href,
+  variant = 'primary',
+  size = 'default',
+  type = 'button',
+  disabled = false,
+  target,
+  'aria-label': ariaLabel,
+  'aria-current': ariaCurrent,
+  class: className,
+}: Props = Astro.props;
+
 const classes = ['btn', `btn--${variant}`, `btn--${size}`, className].filter(Boolean).join(' ');
 const isLink = typeof href === 'string';
+const rel = target === '_blank' ? 'noopener noreferrer' : undefined;
 ---
 
 {
   isLink ? (
-    <a class={classes} href={href}>
+    <a
+      class={classes}
+      href={href}
+      target={target}
+      rel={rel}
+      aria-label={ariaLabel}
+      aria-current={ariaCurrent}
+    >
       <slot />
     </a>
   ) : (
-    <button class={classes} type={type}>
+    <button class={classes} type={type} disabled={disabled} aria-label={ariaLabel}>
       <slot />
     </button>
   )
@@ -35,8 +68,10 @@ const isLink = typeof href === 'string';
     gap: var(--space-2);
     align-items: center;
     justify-content: center;
+    min-block-size: var(--tap-target-min);
+    font-family: var(--font-body);
     font-weight: var(--font-weight-semibold);
-    line-height: 1;
+    line-height: 1.2;
     text-align: center;
     text-decoration: none;
     border: var(--border-width) solid transparent;
@@ -44,15 +79,19 @@ const isLink = typeof href === 'string';
     transition: var(--transition-colors);
   }
 
-  .btn--md {
-    padding: var(--space-3) var(--space-5);
-    font-size: var(--font-size-base);
+  /* --- Tamaños ---------------------------------------------------------- */
+
+  .btn--default {
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--font-size-body-sm);
   }
 
-  .btn--lg {
-    padding: var(--space-4) var(--space-6);
-    font-size: var(--font-size-lg);
+  .btn--large {
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-body);
   }
+
+  /* --- Primary ---------------------------------------------------------- */
 
   .btn--primary {
     color: var(--color-text-inverse);
@@ -64,22 +103,65 @@ const isLink = typeof href === 'string';
     background-color: var(--color-primary-hover);
   }
 
+  .btn--primary:active {
+    background-color: var(--color-primary-active);
+  }
+
+  /* --- Secondary -------------------------------------------------------- */
+
   .btn--secondary {
-    color: var(--color-navy);
-    background-color: var(--color-white);
-    border-color: var(--color-border);
+    color: var(--color-primary);
+    background-color: transparent;
+    border-color: var(--color-primary);
   }
 
   .btn--secondary:hover {
-    border-color: var(--color-petrol);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
   }
 
-  .btn--ghost {
-    color: var(--color-blue);
+  .btn--secondary:active {
+    background-color: var(--color-primary-active);
+    border-color: var(--color-primary-active);
+  }
+
+  /* --- Text ------------------------------------------------------------- */
+
+  .btn--text {
+    padding-inline: var(--space-2);
+    color: var(--color-primary);
     background-color: transparent;
   }
 
-  .btn--ghost:hover {
+  .btn--text:hover {
+    color: var(--color-petrol);
     background-color: var(--color-background-soft);
+  }
+
+  .btn--text:active {
+    background-color: var(--color-border);
+  }
+
+  /* --- Estados comunes -------------------------------------------------- */
+
+  .btn:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .btn:disabled:hover {
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+  }
+
+  .btn--secondary:disabled:hover,
+  .btn--text:disabled:hover {
+    color: var(--color-primary);
+    background-color: transparent;
   }
 </style>

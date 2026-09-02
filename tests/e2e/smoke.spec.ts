@@ -27,9 +27,10 @@ test.describe('smoke', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Simulador de hipoteca');
     await expect(page.getByText('Simulador FINOVA — pendiente de implementación')).toBeVisible();
 
-    // El placeholder no se hidrata: sin <astro-island> y sin scripts de React.
+    // El placeholder no se hidrata: sin <astro-island> y sin bundles externos.
+    // (El único JS de la página es el menú de la cabecera, inline y sin `src`.)
     await expect(page.locator('astro-island')).toHaveCount(0);
-    await expect(page.locator('script[type="module"]')).toHaveCount(0);
+    await expect(page.locator('script[src]')).toHaveCount(0);
   });
 
   test('las páginas legales van marcadas como noindex', async ({ page }) => {

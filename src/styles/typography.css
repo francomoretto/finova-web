@@ -3,16 +3,20 @@
 
    Fuentes SELF-HOSTED. No se usa Google Fonts ni ningún CDN externo.
 
-   Cómo añadir la familia definitiva:
-   1. Colocar los archivos .woff2 en `public/fonts/`
-      (ej.: public/fonts/finova-sans-400.woff2).
-   2. Descomentar y ajustar los bloques @font-face de abajo.
-   3. Si se quiere precargar el peso crítico, añadir en BaseLayout.astro:
-      <link rel="preload" href="/fonts/finova-sans-400.woff2" as="font"
-            type="font/woff2" crossorigin />
-   4. Mantener `font-display: swap` para no bloquear el render.
+   ── Cómo añadir la familia definitiva ─────────────────────────────────────
+   1. Colocar los .woff2 en `public/fonts/` (ej.: finova-sans-400.woff2).
+   2. Descomentar y ajustar los @font-face de abajo.
+   3. En `tokens.css`, anteponer la familia:
+        --font-body:    'Finova Sans', var(--font-fallback);
+        --font-heading: 'Finova Display', var(--font-fallback);
+      Ese es el ÚNICO cambio necesario: ningún componente declara familias.
+   4. Si se quiere precargar el peso crítico, añadir en BaseLayout.astro:
+        <link rel="preload" href="/fonts/finova-sans-400.woff2" as="font"
+              type="font/woff2" crossorigin />
+   5. Mantener `font-display: swap` para no bloquear el render.
 
-   Mientras no existan los WOFF2, `--font-sans` resuelve al stack de sistema.
+   Mientras no existan los WOFF2, ambas variables resuelven al stack de
+   sistema (Arial → system-ui → sans-serif).
    ========================================================================== */
 
 /*
@@ -42,12 +46,18 @@
 */
 
 body {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-base);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-base);
+  line-height: var(--line-height-body);
   color: var(--color-text);
 }
+
+/* --- Encabezados ---------------------------------------------------------
+   Los elementos h1–h4 llevan de serie el estilo de su nivel. Las clases
+   .text-* permiten aplicar un estilo distinto sin romper la jerarquía
+   semántica (p. ej. un h2 que debe verse como h3).
+   ---------------------------------------------------------------------- */
 
 h1,
 h2,
@@ -63,27 +73,70 @@ h6 {
   color: var(--color-navy);
 }
 
-h1 {
-  font-size: var(--font-size-4xl);
-  line-height: var(--line-height-tight);
+.text-display {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-display);
+  text-wrap: balance;
+  color: var(--color-navy);
 }
 
-h2 {
-  font-size: var(--font-size-3xl);
+h1,
+.text-h1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-display);
 }
 
-h3 {
-  font-size: var(--font-size-2xl);
+h2,
+.text-h2 {
+  font-size: var(--font-size-h2);
 }
 
-h4 {
-  font-size: var(--font-size-xl);
+h3,
+.text-h3 {
+  font-size: var(--font-size-h3);
+}
+
+h4,
+.text-h4 {
+  font-size: var(--font-size-h4);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
 }
 
 h5,
 h6 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-body-lg);
   font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+/* --- Texto corrido -------------------------------------------------------- */
+
+.text-body-lg {
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-relaxed);
+}
+
+.text-body {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
+
+.text-body-sm {
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-body);
+}
+
+/* Etiquetas de formulario, epígrafes y metadatos. */
+.text-label {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 p,
@@ -107,7 +160,7 @@ a:hover {
 }
 
 small {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-body-sm);
   color: var(--color-text-muted);
 }
 

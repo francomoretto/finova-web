@@ -1,49 +1,98 @@
 ---
 /**
- * Cabecera del sitio. HTML estático, sin JavaScript.
- * El menú móvil se resolverá con CSS (o una isla mínima) en la etapa de diseño.
+ * Cabecera del sitio.
+ *
+ * Desktop (≥1024px): logo · navegación · CTA en una fila. Cero JavaScript.
+ * Móvil y tablet (<1024px): logo · botón de menú; la navegación cae en un panel.
+ *
+ * El corte está en 1024px y no en 768px porque a esa anchura los cinco enlaces
+ * más el CTA no caben en una fila sin desbordar el contenedor (medido).
+ *
+ * El panel móvil se resuelve con HTML + CSS + ~1 kB de JavaScript vanilla
+ * (al final de este archivo). Sin React y sin dependencias.
+ *
+ * Sin JavaScript, la regla del bloque noscript muestra el panel desplegado y
+ * oculta el botón: la navegación sigue siendo completamente usable.
  */
+import Button from '@components/common/Button.astro';
 import Container from '@components/common/Container.astro';
-import { SERVICES } from '@data/services';
+import Logo from '@components/common/Logo.astro';
+import { isActiveNavItem, mainNavigation, primaryCta } from '@data/navigation';
 
 const currentPath = Astro.url.pathname;
-
-const navItems = [
-  { href: '/', label: 'Inicio' },
-  ...SERVICES.map((service) => ({ href: service.href, label: service.navLabel })),
-  { href: '/simulador-hipoteca/', label: 'Simulador' },
-  { href: '/contacto/', label: 'Contacto' },
-];
-
-const isCurrent = (href: string): boolean => currentPath === href;
 ---
 
-<header class="site-header">
-  <Container class="site-header__inner">
-    <a class="site-header__brand" href="/">
-      FINOVA
-      <span class="visually-hidden">— Inicio</span>
-    </a>
+<header class="site-header" data-site-header>
+  <Container>
+    <div class="site-header__inner">
+      <a class="site-header__brand" href="/">
+        <Logo label="FINOVA · Inicio" />
+      </a>
 
-    <nav class="site-nav" aria-label="Navegación principal">
-      <ul class="site-nav__list" role="list">
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav-panel"
+        aria-label="Abrir menú de navegación"
+        data-nav-toggle
+      >
+        <span class="nav-toggle__bars" aria-hidden="true"></span>
+      </button>
+
+      <div class="site-header__panel" id="site-nav-panel" data-nav-panel>
+        <nav class="site-nav" aria-label="Navegación principal">
+          <ul class="site-nav__list" role="list">
+            {
+              mainNavigation.map((item) => (
+                <li>
+                  <a
+                    class="site-nav__link"
+                    href={item.href}
+                    aria-current={isActiveNavItem(item, currentPath) ? 'page' : undefined}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
         {
-          navItems.map((item) => (
-            <li>
-              <a
-                class="site-nav__link"
-                href={item.href}
-                aria-current={isCurrent(item.href) ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))
+          /*
+          El botón va envuelto: los estilos scoped de este componente no
+          alcanzan al elemento que renderiza `Button.astro`. El contenedor sí
+          es nuestro, y `display: grid` hace que el botón ocupe todo el ancho
+          en móvil sin tocar los estilos internos de `Button`.
+        */
         }
-      </ul>
-    </nav>
+        <div class="site-header__cta">
+          <Button href={primaryCta.href}>{primaryCta.label}</Button>
+        </div>
+      </div>
+    </div>
   </Container>
 </header>
+
+<noscript>
+  <!--
+    Sin JavaScript no hay panel que abrir: se muestra la navegación completa y
+    se oculta el botón. Selectores por atributo data-* (estables frente al
+    hash de scoping) y con especificidad suficiente para ganar sin !important.
+  -->
+  <style is:inline>
+    @media (max-width: 63.99rem) {
+      header[data-site-header] [data-nav-panel] {
+        display: flex;
+      }
+
+      header[data-site-header] [data-nav-toggle] {
+        display: none;
+      }
+    }
+  </style>
+</noscript>
 
 <style>
   .site-header {
@@ -54,46 +103,248 @@ const isCurrent = (href: string): boolean => currentPath === href;
     border-block-end: var(--border-default);
   }
 
-  .site-header :global(.site-header__inner) {
+  .site-header__inner {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
+    gap: var(--space-6);
     align-items: center;
     justify-content: space-between;
-    padding-block: var(--space-4);
+    min-block-size: var(--header-height);
   }
 
   .site-header__brand {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-navy);
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-target-min);
     text-decoration: none;
-    letter-spacing: var(--letter-spacing-tight);
+    border-radius: var(--radius-xs);
+  }
+
+  /* --- Botón de menú (sólo móvil) --------------------------------------- */
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--tap-target-min);
+    min-block-size: var(--tap-target-min);
+    /* Compensa el aire interno del icono para alinearlo con el borde óptico. */
+    margin-inline-end: calc(var(--space-2) * -1);
+    color: var(--color-navy);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Icono de hamburguesa dibujado en CSS: sin librería de iconos ni SVG. */
+  .nav-toggle__bars,
+  .nav-toggle__bars::before,
+  .nav-toggle__bars::after {
+    display: block;
+    inline-size: 1.375rem;
+    block-size: 2px;
+    background-color: currentcolor;
+    border-radius: var(--radius-pill);
+    transition:
+      transform var(--duration-base) var(--easing-standard),
+      background-color var(--duration-fast) var(--easing-standard);
+  }
+
+  .nav-toggle__bars::before,
+  .nav-toggle__bars::after {
+    position: relative;
+    content: '';
+  }
+
+  .nav-toggle__bars::before {
+    inset-block-start: -7px;
+  }
+
+  .nav-toggle__bars::after {
+    inset-block-start: 5px;
+  }
+
+  /* Abierto: la barra central desaparece y las otras dos forman una X. */
+  .site-header[data-nav-open='true'] .nav-toggle__bars {
+    background-color: transparent;
+  }
+
+  .site-header[data-nav-open='true'] .nav-toggle__bars::before {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .site-header[data-nav-open='true'] .nav-toggle__bars::after {
+    transform: translateY(-5px) rotate(-45deg);
+  }
+
+  /* --- Panel de navegación ---------------------------------------------- */
+
+  .site-header__panel {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline: 0;
+    display: none;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-block: var(--space-4) var(--space-6);
+    padding-inline: var(--container-padding-inline);
+    background-color: var(--color-background);
+    border-block-end: var(--border-default);
+    box-shadow: var(--shadow-md);
+  }
+
+  .site-header[data-nav-open='true'] .site-header__panel {
+    display: flex;
   }
 
   .site-nav__list {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-4);
-    align-items: center;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: 0;
     margin: 0;
   }
 
   .site-nav__link {
-    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    min-block-size: var(--tap-target-min);
+    padding-inline: var(--space-2);
+    font-size: var(--font-size-body);
     font-weight: var(--font-weight-medium);
     color: var(--color-text);
     text-decoration: none;
+    border-radius: var(--radius-sm);
   }
 
-  .site-nav__link:hover,
-  .site-nav__link[aria-current='page'] {
-    color: var(--color-petrol);
+  .site-nav__link:hover {
+    color: var(--color-blue);
+    background-color: var(--color-background-soft);
   }
 
   .site-nav__link[aria-current='page'] {
-    text-decoration: underline;
-    text-underline-offset: 0.35em;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-blue);
+  }
+
+  .site-header__cta {
+    display: grid;
+    margin-block-start: var(--space-2);
+  }
+
+  /* --- Desktop ----------------------------------------------------------- */
+
+  @media (min-width: 64rem) {
+    .nav-toggle {
+      display: none;
+    }
+
+    .site-header__panel {
+      position: static;
+      display: flex;
+      flex-direction: row;
+      gap: var(--space-6);
+      align-items: center;
+      padding: 0;
+      background: none;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .site-nav__list {
+      flex-direction: row;
+      gap: var(--space-1);
+      align-items: center;
+    }
+
+    .site-nav__link {
+      min-block-size: auto;
+      padding-block: var(--space-2);
+      padding-inline: var(--space-3);
+      font-size: var(--font-size-body-sm);
+      white-space: nowrap;
+    }
+
+    .site-nav__link[aria-current='page'] {
+      background-color: var(--color-background-soft);
+    }
+
+    .site-header__cta {
+      display: block;
+      margin-block-start: 0;
+      white-space: nowrap;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .site-header__panel {
+      gap: var(--space-7);
+    }
+  }
+
+  /* El icono no se anima si el usuario ha pedido reducir el movimiento. */
+  @media (prefers-reduced-motion: reduce) {
+    .nav-toggle__bars,
+    .nav-toggle__bars::before,
+    .nav-toggle__bars::after {
+      transition: none;
+    }
   }
 </style>
+
+<script>
+  /**
+   * Menú móvil: abrir/cerrar, Escape, clic fuera y cierre al navegar.
+   *
+   * Los listeners de `document` se registran SÓLO mientras el panel está
+   * abierto y se retiran al cerrarlo: nada queda escuchando de más.
+   */
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  const toggle = header?.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const panel = header?.querySelector<HTMLElement>('[data-nav-panel]');
+
+  if (header && toggle && panel) {
+    const setOpen = (open: boolean): void => {
+      header.dataset['navOpen'] = String(open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute(
+        'aria-label',
+        open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación',
+      );
+
+      if (open) {
+        document.addEventListener('keydown', onKeydown);
+        document.addEventListener('pointerdown', onPointerDown);
+      } else {
+        document.removeEventListener('keydown', onKeydown);
+        document.removeEventListener('pointerdown', onPointerDown);
+      }
+    };
+
+    function onKeydown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        toggle?.focus();
+      }
+    }
+
+    function onPointerDown(event: PointerEvent): void {
+      if (event.target instanceof Node && header?.contains(event.target) === false) {
+        setOpen(false);
+      }
+    }
+
+    toggle.addEventListener('click', () => {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    // Al pulsar un enlace del panel, cerrarlo (los anclas no recargan la página).
+    panel.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('a')) {
+        setOpen(false);
+      }
+    });
+
+    // Al pasar a desktop el panel deja de estar oculto: se limpia el estado.
+    window.matchMedia('(min-width: 64rem)').addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+  }
+</script>

@@ -19,8 +19,9 @@
   --color-background-soft: #f6f8fb;
   --color-border: #e5e9f2;
 
-  --color-primary: var(--color-navy);
-  --color-primary-hover: var(--color-blue);
+  --color-primary: var(--color-blue);
+  --color-primary-hover: var(--color-navy);
+  --color-primary-active: #001b4a;
   --color-accent: var(--color-petrol);
 
   /* Estados. Contraste AA sobre fondo claro. */
@@ -29,57 +30,93 @@
   --color-danger: #9b1c1c;
   --color-focus: var(--color-petrol);
 
+  /* Superficies sobre fondo oscuro (pie de página). */
+  --color-surface-dark: var(--color-blue);
+  --color-surface-dark-alt: var(--color-navy);
+  /* #b9c7de sobre #00286b = 8,11:1 · AAA para texto normal. */
+  --color-text-on-dark-muted: #b9c7de;
+  --color-border-on-dark: rgb(255 255 255 / 16%);
+  --color-focus-on-dark: var(--color-white);
+
+  /* --- Breakpoints -------------------------------------------------------
+     Referencia para las media queries. CSS no admite var() dentro de @media,
+     así que los valores se repiten literalmente; estos son los canónicos.
+       sm  30rem  480px
+       md  48rem  768px   tablet · aquí conmuta la navegación
+       lg  64rem 1024px   desktop
+       xl  90rem 1440px
+     -------------------------------------------------------------------- */
+
   /* --- Layout ------------------------------------------------------------ */
-  --container-max-width: 1200px;
-  --container-narrow-width: 760px;
+  --container-max-width: 75rem; /* 1200px */
+  --container-wide-width: 90rem; /* 1440px */
+  --container-narrow-width: 47.5rem; /* 760px */
+  /* Móvil: 20px. Se amplía por breakpoint más abajo. */
   --container-padding-inline: var(--space-5);
 
-  /* --- Espaciado (escala 4px) -------------------------------------------- */
+  --header-height: 4.5rem; /* 72px */
+
+  /* --- Espaciado ---------------------------------------------------------
+     Escala: 4 8 12 16 20 24 32 40 48 64 80 96 120 px.
+     -------------------------------------------------------------------- */
   --space-0: 0;
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-  --space-7: 3rem;
-  --space-8: 4rem;
-  --space-9: 6rem;
-  --space-10: 8rem;
+  --space-1: 0.25rem; /* 4 */
+  --space-2: 0.5rem; /* 8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-5: 1.25rem; /* 20 */
+  --space-6: 1.5rem; /* 24 */
+  --space-7: 2rem; /* 32 */
+  --space-8: 2.5rem; /* 40 */
+  --space-9: 3rem; /* 48 */
+  --space-10: 4rem; /* 64 */
+  --space-11: 5rem; /* 80 */
+  --space-12: 6rem; /* 96 */
+  --space-13: 7.5rem; /* 120 */
 
   /* Ritmo vertical fluido entre secciones. */
   --section-spacing: clamp(3rem, 7vw, 6rem);
 
-  /* --- Tipografía -------------------------------------------------------- */
-  /* Las familias self-hosted se declaran en typography.css (@font-face).
-     Hasta que existan los WOFF2, el stack de sistema actúa como fallback. */
-  --font-sans:
-    'Finova Sans', system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif;
-  --font-heading: var(--font-sans);
+  /* --- Tipografía: familias ----------------------------------------------
+     Un único punto de cambio. Al añadir los WOFF2 (ver typography.css) basta
+     con anteponer la familia propia aquí: ningún componente se toca.
+     -------------------------------------------------------------------- */
+  --font-fallback:
+    arial, system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', helvetica, sans-serif;
+  --font-body: var(--font-fallback);
+  --font-heading: var(--font-fallback);
   --font-mono: ui-monospace, sfmono-regular, 'SF Mono', menlo, monospace;
 
-  --font-size-xs: 0.8125rem;
-  --font-size-sm: 0.9375rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: clamp(1.25rem, 0.5vw + 1.1rem, 1.375rem);
-  --font-size-2xl: clamp(1.5rem, 1vw + 1.25rem, 1.875rem);
-  --font-size-3xl: clamp(1.875rem, 2vw + 1.4rem, 2.5rem);
-  --font-size-4xl: clamp(2.25rem, 3vw + 1.5rem, 3.25rem);
+  /* --- Tipografía: escala responsive --------------------------------------
+     Todos los tamaños del sitio salen de aquí. Ningún componente define
+     `font-size` con un valor arbitrario.
+     -------------------------------------------------------------------- */
+  --font-size-display: clamp(2.5rem, 1.55rem + 3.8vw, 4.5rem);
+  --font-size-h1: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
+  --font-size-h2: clamp(1.625rem, 1.27rem + 1.42vw, 2.375rem);
+  --font-size-h3: clamp(1.375rem, 1.2rem + 0.71vw, 1.75rem);
+  --font-size-h4: clamp(1.125rem, 1.05rem + 0.3vw, 1.3125rem);
+  --font-size-body-lg: clamp(1.0625rem, 1.03rem + 0.15vw, 1.1875rem);
+  --font-size-body: 1rem;
+  --font-size-body-sm: 0.9375rem;
+  --font-size-label: 0.8125rem;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  --line-height-tight: 1.15;
-  --line-height-heading: 1.25;
-  --line-height-base: 1.6;
+  --line-height-display: 1.05;
+  --line-height-heading: 1.2;
+  --line-height-snug: 1.35;
+  --line-height-body: 1.6;
   --line-height-relaxed: 1.75;
 
+  --letter-spacing-display: -0.03em;
   --letter-spacing-tight: -0.02em;
   --letter-spacing-normal: 0;
   --letter-spacing-wide: 0.04em;
+  --letter-spacing-wider: 0.08em;
 
   --measure: 68ch;
 
@@ -110,9 +147,14 @@
     background-color var(--duration-base) var(--easing-standard),
     border-color var(--duration-base) var(--easing-standard);
 
-  /* --- Focus ------------------------------------------------------------- */
+  /* --- Foco -------------------------------------------------------------- */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
+
+  /* --- Objetivo táctil ----------------------------------------------------
+     Mínimo recomendado por WCAG 2.2 (AAA 2.5.5) y por las guías de iOS/Android.
+     -------------------------------------------------------------------- */
+  --tap-target-min: 2.75rem; /* 44px */
 
   /* --- z-index ----------------------------------------------------------- */
   --z-base: 0;
@@ -122,4 +164,17 @@
   --z-overlay: 800;
   --z-modal: 900;
   --z-toast: 1000;
+}
+
+/* Padding del contenedor por breakpoint: 20px → 24px → 32px. */
+@media (min-width: 48rem) {
+  :root {
+    --container-padding-inline: var(--space-6);
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --container-padding-inline: var(--space-7);
+  }
 }

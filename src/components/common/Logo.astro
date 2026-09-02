@@ -1,0 +1,60 @@
+---
+/**
+ * Logotipo de FINOVA.
+ *
+ * ⚠️ PROVISIONAL: todavía no existe el logotipo definitivo, así que se dibuja
+ * como marca tipográfica. NO es un logo inventado; es texto con los tokens de
+ * la marca, a la espera del SVG real.
+ *
+ * ── Cómo sustituirlo cuando llegue el SVG ────────────────────────────────
+ * 1. Colocar `logo-finova.svg` y `logo-finova-white.svg` en `src/assets/brand/`
+ *    (ver el README de esa carpeta).
+ * 2. Reemplazar el <span class="logo__wordmark"> por:
+ *      import logo from '@assets/brand/logo-finova.svg';
+ *      import logoWhite from '@assets/brand/logo-finova-white.svg';
+ *      <Image src={tone === 'light' ? logoWhite : logo} alt="" width={132} height={28} />
+ *    dejando `alt=""` porque el nombre accesible lo aporta el enlace que
+ *    envuelve al logo (o el `<span class="visually-hidden">` de más abajo).
+ * 3. Header.astro y Footer.astro NO se tocan: consumen este componente.
+ * ------------------------------------------------------------------------
+ */
+interface Props {
+  /** `dark` para fondos claros; `light` para el pie de página. */
+  tone?: 'dark' | 'light';
+  /** Nombre accesible. Vacío si el elemento que lo envuelve ya lo aporta. */
+  label?: string;
+  class?: string;
+}
+
+const { tone = 'dark', label, class: className }: Props = Astro.props;
+const classes = ['logo', `logo--${tone}`, className].filter(Boolean).join(' ');
+---
+
+<span class={classes}>
+  <span class="logo__wordmark" aria-hidden={label === undefined ? undefined : 'true'}>FINOVA</span>
+  {label !== undefined && <span class="visually-hidden">{label}</span>}
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .logo__wordmark {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-h4);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .logo--dark .logo__wordmark {
+    color: var(--color-navy);
+  }
+
+  .logo--light .logo__wordmark {
+    color: var(--color-white);
+  }
+</style>

@@ -1,15 +1,27 @@
 ---
-/** Contenedor centrado con el ancho máximo del sistema de diseño. */
+/**
+ * Contenedor centrado del sistema de diseño.
+ *
+ * El ancho máximo y el padding lateral responsive (20 → 24 → 32 px) viven en
+ * `tokens.css`. Ningún componente vuelve a escribir 1200px.
+ */
 interface Props {
   /** Etiqueta HTML a renderizar. Por defecto `div`. */
   as?: 'div' | 'section' | 'article' | 'header' | 'footer' | 'nav' | 'aside';
-  /** Usa el ancho reducido para contenido de lectura larga. */
-  narrow?: boolean;
+  /**
+   * Ancho máximo:
+   * - `default`  1200px — el del sitio
+   * - `wide`     1440px — bloques que respiran más
+   * - `narrow`    760px — lectura larga (textos legales)
+   * - `full`     sin límite, conservando el padding lateral
+   */
+  width?: 'default' | 'wide' | 'narrow' | 'full';
   class?: string;
 }
 
-const { as: Tag = 'div', narrow = false, class: className }: Props = Astro.props;
-const classes = ['container', narrow ? 'container--narrow' : null, className]
+const { as: Tag = 'div', width = 'default', class: className }: Props = Astro.props;
+
+const classes = ['container', width === 'default' ? null : `container--${width}`, className]
   .filter(Boolean)
   .join(' ');
 ---

@@ -8,6 +8,7 @@ export default defineConfig({
   // Los alias replican los `paths` de tsconfig.json: Vitest no lee tsconfig.
   resolve: {
     alias: {
+      '@assets': resolveSrc('./src/assets'),
       '@components': resolveSrc('./src/components'),
       '@layouts': resolveSrc('./src/layouts'),
       '@lib': resolveSrc('./src/lib'),
