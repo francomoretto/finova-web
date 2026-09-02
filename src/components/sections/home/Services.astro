@@ -1,0 +1,108 @@
+---
+/**
+ * Especialidades hipotecarias.
+ *
+ * Los datos vienen de `src/data/services.ts` (fuente única): esta sección no
+ * repite títulos, textos ni URLs.
+ */
+import Container from '@components/common/Container.astro';
+import { SERVICES } from '@data/services';
+---
+
+<section class="services">
+  <Container>
+    <div class="services__head">
+      <h2>Soluciones hipotecarias para distintas necesidades</h2>
+    </div>
+
+    <ul class="services__list" role="list">
+      {
+        SERVICES.map((service) => (
+          <li class="services__item">
+            <h3 class="services__item-title">
+              <a class="services__link" href={service.href}>
+                {service.title}
+              </a>
+            </h3>
+            <p class="services__item-text">{service.description}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Container>
+</section>
+
+<style>
+  .services {
+    padding-block: var(--section-spacing);
+  }
+
+  .services__head h2 {
+    max-inline-size: 20ch;
+  }
+
+  .services__list {
+    padding: 0;
+    margin-block-start: var(--space-9);
+    border-block-start: var(--border-default);
+  }
+
+  .services__item {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-7);
+    border-block-end: var(--border-default);
+  }
+
+  .services__item-title {
+    font-size: var(--font-size-h3);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  /* El enlace cubre toda la fila para dar un objetivo táctil generoso. */
+  .services__link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .services__item:hover .services__link,
+  .services__link:focus-visible {
+    color: var(--color-blue);
+  }
+
+  .services__link::after {
+    display: inline-block;
+    margin-inline-start: var(--space-3);
+    content: '→';
+    transition: transform var(--duration-base) var(--easing-standard);
+  }
+
+  .services__item:hover .services__link::after {
+    transform: translateX(var(--space-1));
+  }
+
+  .services__item-text {
+    max-inline-size: 62ch;
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .services__item {
+      grid-template-columns: 1.1fr 1fr;
+      gap: var(--space-7);
+      align-items: baseline;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .services__link::after {
+      transition: none;
+    }
+
+    .services__item:hover .services__link::after {
+      transform: none;
+    }
+  }
+</style>

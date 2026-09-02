@@ -1,0 +1,380 @@
+---
+/**
+ * Contacto. Ancla `#contacto`.
+ *
+ * ⚠️ El formulario NO envía todavía: la decisión de runtime de producción
+ * (static + endpoint PHP vs. Astro SSR) sigue abierta, así que no hay endpoint
+ * al que apuntar. El botón de envío está deshabilitado y se explica por qué;
+ * no se simula ningún envío correcto ni se usa `mailto:` como sustituto.
+ *
+ * Los límites de los campos salen de `CONTACT_LIMITS` (el mismo módulo que
+ * alimenta el schema de Zod), de modo que la validación del navegador y la del
+ * servidor no puedan divergir.
+ */
+import Container from '@components/common/Container.astro';
+import { COMPANY } from '@data/company';
+import { CONTACT_LIMITS, PHONE_PATTERN } from '@lib/validation/contact';
+---
+
+<section class="contact section--soft" id="contacto">
+  <Container>
+    <div class="contact__grid">
+      <div class="contact__intro">
+        <h2>Hablemos de tu hipoteca</h2>
+        <p class="contact__lead">
+          Cuéntanos tu caso y estudiamos la operación sin compromiso. Analizamos tu perfil y te
+          decimos con claridad qué alternativas de financiación tienes.
+        </p>
+
+        <p class="contact__regulatory">
+          {COMPANY.legalName} — Intermediario de Crédito Inmobiliario registrado en el Banco de España
+          · {COMPANY.registrations.bankOfSpain}<br />
+          Asociado ANICI · Nº {COMPANY.registrations.anici}
+        </p>
+      </div>
+
+      <div class="contact__panel">
+        <form class="contact__form" aria-describedby="contact-status">
+          <div class="field">
+            <label class="field__label" for="contact-name">Nombre</label>
+            <input
+              class="field__control"
+              id="contact-name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              minlength={CONTACT_LIMITS.name.min}
+              maxlength={CONTACT_LIMITS.name.max}
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="contact-email">Email</label>
+            <input
+              class="field__control"
+              id="contact-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              maxlength={CONTACT_LIMITS.email.max}
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="contact-phone">
+              Teléfono <span class="field__optional">(opcional)</span>
+            </label>
+            <input
+              class="field__control"
+              id="contact-phone"
+              name="phone"
+              type="tel"
+              autocomplete="tel"
+              pattern={PHONE_PATTERN}
+              aria-describedby="contact-phone-hint"
+            />
+            <p class="field__hint" id="contact-phone-hint">
+              Entre {CONTACT_LIMITS.phone.min} y {CONTACT_LIMITS.phone.max} dígitos. Puedes incluir el
+              prefijo internacional.
+            </p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="contact-subject">Asunto</label>
+            <input
+              class="field__control"
+              id="contact-subject"
+              name="subject"
+              type="text"
+              minlength={CONTACT_LIMITS.subject.min}
+              maxlength={CONTACT_LIMITS.subject.max}
+              required
+            />
+          </div>
+
+          <div class="field field--full">
+            <label class="field__label" for="contact-message">Mensaje</label>
+            <textarea
+              class="field__control field__control--textarea"
+              id="contact-message"
+              name="message"
+              rows="5"
+              minlength={CONTACT_LIMITS.message.min}
+              maxlength={CONTACT_LIMITS.message.max}
+              required></textarea>
+          </div>
+
+          {
+            /*
+            Trampa anti-spam: fuera del orden de foco y oculta para lectores de
+            pantalla porque no es contenido, sino un cebo para bots.
+          */
+          }
+          <div class="honeypot" aria-hidden="true">
+            <label for="contact-website">No rellenar</label>
+            <input
+              id="contact-website"
+              name="website"
+              type="text"
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="field field--full consent">
+            <input
+              class="consent__input"
+              id="contact-consent"
+              name="consent"
+              type="checkbox"
+              required
+            />
+            <label class="consent__label" for="contact-consent">
+              He leído y acepto la <a href="/politica-privacidad/">Política de Privacidad</a>.
+            </label>
+          </div>
+
+          <div class="field--full">
+            <button class="contact__submit" type="submit" disabled>Enviar consulta</button>
+          </div>
+
+          <p class="contact__status placeholder-note" id="contact-status">
+            El envío del formulario todavía no está activo: queda pendiente de definir el entorno de
+            ejecución en producción. Hasta entonces, el botón permanece deshabilitado para no dar
+            por enviada una consulta que no llegaría a su destino.
+          </p>
+        </form>
+
+        <section class="privacy" aria-labelledby="privacy-heading">
+          <h3 class="privacy__heading" id="privacy-heading">Protección de datos</h3>
+
+          <dl class="privacy__list">
+            <dt>Responsable</dt>
+            <dd>
+              {COMPANY.legalName} · NIF {COMPANY.nif}<br />
+              {COMPANY.address.street}, {COMPANY.address.postalCode}
+              {COMPANY.address.city}
+              ({COMPANY.address.region})<br />
+              <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+            </dd>
+          </dl>
+
+          <p class="privacy__pending">
+            El resto de la información básica sobre protección de datos (finalidad, legitimación,
+            destinatarios, plazos de conservación y ejercicio de derechos) está pendiente de la
+            redacción y revisión jurídica. Se publicará aquí y en la
+            <a href="/politica-privacidad/">Política de Privacidad</a> antes de activar el envío.
+          </p>
+        </section>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .contact {
+    padding-block: var(--section-spacing);
+  }
+
+  .contact__grid {
+    display: grid;
+    gap: var(--space-9);
+  }
+
+  .contact__lead {
+    max-inline-size: 46ch;
+    margin-block-start: var(--space-5);
+    font-size: var(--font-size-body-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .contact__regulatory {
+    max-inline-size: 46ch;
+    margin-block-start: var(--space-8);
+    font-size: var(--font-size-label);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .contact__panel {
+    padding: var(--space-7);
+    background-color: var(--color-background);
+    border: var(--border-default);
+    border-radius: var(--radius-lg);
+  }
+
+  .contact__form {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .field__label {
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-navy);
+  }
+
+  .field__optional {
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-muted);
+  }
+
+  .field__control {
+    min-block-size: var(--tap-target-min);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-body);
+    color: var(--color-text);
+    background-color: var(--color-background);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-colors);
+  }
+
+  .field__control:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  .field__control:focus-visible {
+    border-color: var(--color-focus);
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: 1px;
+  }
+
+  .field__control--textarea {
+    min-block-size: 8rem;
+    resize: vertical;
+  }
+
+  .field__hint {
+    max-inline-size: none;
+    font-size: var(--font-size-label);
+    color: var(--color-text-muted);
+  }
+
+  /* Cebo anti-spam: fuera de pantalla, nunca `display: none`. */
+  .honeypot {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .consent {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .consent__input {
+    /* 24px: mínimo de WCAG 2.2 · 2.5.8 (Target Size, AA). */
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    margin-block-start: 0.05rem;
+    accent-color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  .consent__label {
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-muted);
+  }
+
+  .contact__submit {
+    inline-size: 100%;
+    min-block-size: var(--tap-target-min);
+    padding: var(--space-4) var(--space-8);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    background-color: var(--color-primary);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-colors);
+  }
+
+  .contact__submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .contact__status {
+    max-inline-size: none;
+  }
+
+  /* --- Capa informativa de privacidad ------------------------------------ */
+
+  .privacy {
+    padding-block-start: var(--space-6);
+    margin-block-start: var(--space-7);
+    border-block-start: var(--border-default);
+  }
+
+  .privacy__heading {
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .privacy__list {
+    margin-block-start: var(--space-4);
+    font-size: var(--font-size-label);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .privacy__list dt {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-navy);
+  }
+
+  .privacy__list dd {
+    margin-block-start: var(--space-1);
+    margin-inline-start: 0;
+  }
+
+  .privacy__pending {
+    max-inline-size: none;
+    margin-block-start: var(--space-4);
+    font-size: var(--font-size-label);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .contact__form {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-5) var(--space-6);
+    }
+
+    .field--full {
+      grid-column: 1 / -1;
+    }
+
+    .contact__submit {
+      inline-size: auto;
+      min-inline-size: 16rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .contact__grid {
+      grid-template-columns: 1fr 1.25fr;
+      gap: var(--space-11);
+      align-items: start;
+    }
+
+    .contact__panel {
+      padding: var(--space-9);
+    }
+  }
+</style>

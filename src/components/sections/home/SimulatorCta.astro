@@ -1,0 +1,60 @@
+---
+/**
+ * Bloque destacado que dirige al simulador.
+ * No contiene lógica de cálculo: sólo enlaza a `/simulador-hipoteca/`.
+ */
+import Button from '@components/common/Button.astro';
+import Container from '@components/common/Container.astro';
+---
+
+<section class="simulator-cta">
+  <Container>
+    <div class="simulator-cta__panel">
+      <div class="simulator-cta__content">
+        <h2 class="simulator-cta__title">Calcula una estimación de tu hipoteca</h2>
+        <p class="simulator-cta__text">
+          Conoce de forma orientativa la cuota mensual, el capital financiado y la aportación propia
+          que podrías necesitar.
+        </p>
+      </div>
+
+      <div class="simulator-cta__action">
+        <Button href="/simulador-hipoteca/" size="large">Simular mi hipoteca</Button>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .simulator-cta {
+    padding-block: var(--section-spacing);
+  }
+
+  .simulator-cta__panel {
+    display: grid;
+    gap: var(--space-7);
+    padding: var(--space-9) var(--space-7);
+    background-color: var(--color-background-soft);
+    border: var(--border-default);
+    border-radius: var(--radius-lg);
+  }
+
+  .simulator-cta__title {
+    max-inline-size: 18ch;
+  }
+
+  .simulator-cta__text {
+    max-inline-size: 52ch;
+    margin-block-start: var(--space-4);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .simulator-cta__panel {
+      grid-template-columns: 1fr auto;
+      gap: var(--space-9);
+      align-items: center;
+      padding: var(--space-10) var(--space-10);
+    }
+  }
+</style>

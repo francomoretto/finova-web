@@ -1,0 +1,71 @@
+---
+/**
+ * Bloque institucional. Ancla `#sobre-finova`.
+ *
+ * Se diferencia del resto con fondo azul FINOVA y texto blanco. Reserva una
+ * zona para el recurso gráfico que se entregue más adelante.
+ */
+import BrandLines from '@components/common/BrandLines.astro';
+import Container from '@components/common/Container.astro';
+---
+
+<section class="about" id="sobre-finova">
+  <BrandLines position="bottom-start" />
+
+  <Container>
+    <div class="about__grid">
+      <h2 class="about__title">Tus intereses,<br />en el centro del proceso</h2>
+
+      <p class="about__text">
+        En FINOVA no somos una entidad financiera. Somos un intermediario de crédito inmobiliario y
+        trabajamos para ayudarte a encontrar una solución de financiación adecuada a tu perfil y a
+        tu proyecto. Te acompañamos para que entiendas las distintas alternativas y puedas tomar una
+        decisión informada y con mayor seguridad.
+      </p>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .about {
+    position: relative;
+    padding-block: var(--space-12);
+    color: var(--color-white);
+    background-color: var(--color-surface-dark);
+    background-image: linear-gradient(
+      160deg,
+      var(--color-surface-dark) 0%,
+      var(--color-surface-dark-alt) 100%
+    );
+    isolation: isolate;
+  }
+
+  .about__grid {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .about__title {
+    text-wrap: balance;
+    color: var(--color-white);
+  }
+
+  .about__text {
+    max-inline-size: 60ch;
+    font-size: var(--font-size-body-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-white);
+  }
+
+  @media (min-width: 64rem) {
+    .about {
+      padding-block: var(--space-13);
+    }
+
+    .about__grid {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--space-11);
+      align-items: start;
+    }
+  }
+</style>

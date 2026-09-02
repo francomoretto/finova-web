@@ -1,0 +1,104 @@
+---
+/**
+ * Propuesta de valor.
+ *
+ * Los cuatro conceptos se muestran sólo con su título: no se han recibido
+ * descripciones y no se inventan. La lista está preparada para admitirlas.
+ */
+import Container from '@components/common/Container.astro';
+
+const pillars: readonly string[] = [
+  'Negociamos por ti',
+  'Gestión documental',
+  'Tasación y seguimiento',
+  'Acompañamiento hasta la firma',
+];
+---
+
+<section class="value">
+  <Container>
+    <div class="value__grid">
+      <div class="value__intro">
+        <h2>Comprar tu vivienda puede ser claro, seguro y sin estrés.</h2>
+        <p class="value__text">
+          Nos ocupamos de simplificar cada etapa del proceso hipotecario: analizamos tu perfil,
+          buscamos alternativas de financiación adecuadas a tu situación, gestionamos la
+          documentación y hacemos seguimiento de la operación hasta la firma.
+        </p>
+      </div>
+
+      <ul class="value__list" role="list">
+        {
+          pillars.map((pillar, index) => (
+            <li class="value__item">
+              <span class="value__index" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="value__label">{pillar}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .value {
+    padding-block: var(--section-spacing);
+  }
+
+  .value__grid {
+    display: grid;
+    gap: var(--space-9);
+  }
+
+  .value__text {
+    max-inline-size: 58ch;
+    margin-block-start: var(--space-6);
+    font-size: var(--font-size-body-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .value__list {
+    display: grid;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .value__item {
+    display: flex;
+    gap: var(--space-5);
+    align-items: baseline;
+    padding-block: var(--space-5);
+    border-block-start: var(--border-default);
+  }
+
+  .value__item:last-child {
+    border-block-end: var(--border-default);
+  }
+
+  .value__index {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
+    color: var(--color-petrol);
+  }
+
+  .value__label {
+    font-size: var(--font-size-h4);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-navy);
+  }
+
+  @media (min-width: 64rem) {
+    .value__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-11);
+      align-items: start;
+    }
+  }
+</style>

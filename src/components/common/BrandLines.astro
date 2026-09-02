@@ -1,0 +1,54 @@
+---
+/**
+ * Recurso decorativo de líneas diagonales de FINOVA.
+ *
+ * ⚠️ Hoy NO dibuja nada. Es deliberado: no se recrea el isotipo ni se inventan
+ * formas con CSS. Este componente sólo reserva el hueco y el hook de estilo.
+ *
+ * ── Cómo activarlo cuando llegue el SVG ──────────────────────────────────
+ * 1. Colocar el archivo en `public/brand/` (p. ej. `lines-diagonal.svg`).
+ * 2. Dar valor a la custom property en la sección que lo use:
+ *      .hero { --brand-lines-image: url('/brand/lines-diagonal.svg'); }
+ * 3. Ajustar `position` y `size` con las props de este componente.
+ *
+ * Es puramente decorativo: `aria-hidden` y fuera del orden de foco.
+ * ------------------------------------------------------------------------
+ */
+interface Props {
+  /** Esquina donde se ancla el recurso. */
+  position?: 'top-end' | 'bottom-start' | 'cover';
+  class?: string;
+}
+
+const { position = 'cover', class: className }: Props = Astro.props;
+const classes = ['brand-lines', `brand-lines--${position}`, className].filter(Boolean).join(' ');
+---
+
+<div class={classes} aria-hidden="true"></div>
+
+<style>
+  .brand-lines {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* Sin recurso todavía: no pinta nada. */
+    background-image: var(--brand-lines-image, none);
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+
+  .brand-lines--cover {
+    background-position: center;
+    background-size: cover;
+  }
+
+  .brand-lines--top-end {
+    background-position: right top;
+    background-size: contain;
+  }
+
+  .brand-lines--bottom-start {
+    background-position: left bottom;
+    background-size: contain;
+  }
+</style>

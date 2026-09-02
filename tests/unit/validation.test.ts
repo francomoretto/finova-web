@@ -64,6 +64,7 @@ describe('contactSchema', () => {
   const VALID_CONTACT = {
     name: 'Ana García',
     email: 'ana@example.com',
+    subject: 'Consulta sobre hipoteca',
     message: 'Quiero información sobre una hipoteca.',
     consent: true,
   };
@@ -84,5 +85,24 @@ describe('contactSchema', () => {
 
   it('rechaza mensajes demasiado cortos', () => {
     expect(contactSchema.safeParse({ ...VALID_CONTACT, message: 'hola' }).success).toBe(false);
+  });
+
+  it('exige un asunto', () => {
+    const { subject: _subject, ...withoutSubject } = VALID_CONTACT;
+    expect(contactSchema.safeParse(withoutSubject).success).toBe(false);
+    expect(contactSchema.safeParse({ ...VALID_CONTACT, subject: 'ab' }).success).toBe(false);
+  });
+
+  it('el teléfono es opcional pero se valida si viene', () => {
+    expect(contactSchema.safeParse({ ...VALID_CONTACT, phone: '+34 985 12 34 56' }).success).toBe(
+      true,
+    );
+    expect(contactSchema.safeParse({ ...VALID_CONTACT, phone: 'no-es-un-teléfono' }).success).toBe(
+      false,
+    );
+  });
+
+  it('rechaza el envío si el honeypot viene relleno', () => {
+    expect(contactSchema.safeParse({ ...VALID_CONTACT, website: 'spam' }).success).toBe(false);
   });
 });

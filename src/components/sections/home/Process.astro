@@ -1,0 +1,131 @@
+---
+/**
+ * Proceso de trabajo. Ancla `#proceso` (la cabecera enlaza a `/#proceso`).
+ *
+ * Desktop: cuatro columnas unidas por una regla superior continua.
+ * Móvil:   secuencia vertical. Sin slider y sin JavaScript.
+ */
+import Container from '@components/common/Container.astro';
+
+interface Step {
+  readonly number: string;
+  readonly title: string;
+  readonly text: string;
+}
+
+const steps: readonly Step[] = [
+  {
+    number: '01',
+    title: 'Analizamos tu perfil',
+    text: 'Revisamos tu situación, necesidades y características de la operación.',
+  },
+  {
+    number: '02',
+    title: 'Buscamos las mejores alternativas',
+    text: 'Negociamos entre distintas entidades financieras en función de tu perfil y de las características de la operación.',
+  },
+  {
+    number: '03',
+    title: 'Gestionamos el proceso',
+    text: 'Nos ocupamos de la documentación, tasación y seguimiento de cada etapa.',
+  },
+  {
+    number: '04',
+    title: 'Te acompañamos hasta la firma',
+    text: 'Seguimos la operación hasta el momento de la firma de tu hipoteca.',
+  },
+];
+---
+
+<section class="process section--soft" id="proceso">
+  <Container>
+    <h2 class="process__title">Un proceso simple para tomar una gran decisión</h2>
+
+    <ol class="process__list" role="list">
+      {
+        steps.map((step) => (
+          <li class="process__step">
+            <p class="process__number">{step.number}</p>
+            <h3 class="process__step-title">{step.title}</h3>
+            <p class="process__step-text">{step.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Container>
+</section>
+
+<style>
+  .process {
+    padding-block: var(--section-spacing);
+  }
+
+  .process__title {
+    max-inline-size: 22ch;
+  }
+
+  .process__list {
+    display: grid;
+    gap: var(--space-7);
+    padding: 0;
+    margin-block-start: var(--space-9);
+    list-style: none;
+  }
+
+  .process__step {
+    padding-block-start: var(--space-5);
+    border-block-start: var(--border-width) solid var(--color-border);
+  }
+
+  .process__number {
+    max-inline-size: none;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    color: var(--color-petrol);
+  }
+
+  .process__step-title {
+    margin-block-start: var(--space-4);
+    font-size: var(--font-size-h4);
+  }
+
+  .process__step-text {
+    max-inline-size: 38ch;
+    margin-block-start: var(--space-3);
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .process__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-9) var(--space-7);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    /* Una sola regla continua por encima de las cuatro columnas. */
+    .process__list {
+      position: relative;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-7);
+      padding-block-start: var(--space-5);
+    }
+
+    .process__list::before {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline: 0;
+      block-size: var(--border-width);
+      content: '';
+      background-color: var(--color-border);
+    }
+
+    .process__step {
+      padding-block-start: 0;
+      border-block-start: 0;
+    }
+  }
+</style>

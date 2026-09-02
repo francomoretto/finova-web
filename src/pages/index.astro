@@ -1,24 +1,32 @@
 ---
 /**
- * Portada — PROVISIONAL.
+ * Portada de FINOVA.
  *
- * La Home real se desarrolla en la siguiente etapa. Esta versión existe sólo
- * para auditar visualmente el sistema (cabecera, tipografía, contenedor, pie).
+ * Este archivo sólo compone: todo el contenido y los estilos viven en las
+ * secciones de `src/components/sections/home/`.
  */
-import Container from '@components/common/Container.astro';
 import BaseLayout from '@layouts/BaseLayout.astro';
+import AboutFinova from '@components/sections/home/AboutFinova.astro';
+import BankPartners from '@components/sections/home/BankPartners.astro';
+import ContactSection from '@components/sections/home/ContactSection.astro';
+import Hero from '@components/sections/home/Hero.astro';
+import Process from '@components/sections/home/Process.astro';
+import Services from '@components/sections/home/Services.astro';
+import SimulatorCta from '@components/sections/home/SimulatorCta.astro';
+import ValueProposition from '@components/sections/home/ValueProposition.astro';
 ---
 
 <BaseLayout
-  title="Broker hipotecario en Oviedo"
-  description="FINOVA negocia tu hipoteca con más de una decena de entidades. Intermediario de crédito inmobiliario registrado en el Banco de España (E794)."
+  title="Broker hipotecario"
+  description="FINOVA es un broker hipotecario e Intermediario de Crédito Inmobiliario registrado en el Banco de España. Analizamos tu perfil, negociamos alternativas de financiación y te acompañamos hasta la firma."
   canonical="/"
 >
-  <Container as="section" class="section">
-    <h1>FINOVA</h1>
-    <p class="lead">
-      La portada se desarrollará en la siguiente etapa. Esta página muestra únicamente el sistema
-      visual base: cabecera, contenedor, tipografía y pie.
-    </p>
-  </Container>
+  <Hero />
+  <ValueProposition />
+  <Process />
+  <Services />
+  <AboutFinova />
+  <BankPartners />
+  <SimulatorCta />
+  <ContactSection />
 </BaseLayout>

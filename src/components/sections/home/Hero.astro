@@ -1,0 +1,125 @@
+---
+/**
+ * Hero de la portada.
+ *
+ * Desktop: texto a la izquierda, imagen a la derecha.
+ * Móvil:   texto primero, imagen después (mismo orden en el DOM).
+ */
+import BrandLines from '@components/common/BrandLines.astro';
+import Button from '@components/common/Button.astro';
+import Container from '@components/common/Container.astro';
+import { COMPANY } from '@data/company';
+import { primaryCta } from '@data/navigation';
+---
+
+<section class="hero">
+  <BrandLines position="top-end" />
+
+  <Container>
+    <div class="hero__grid">
+      <div class="hero__content">
+        <p class="eyebrow">Broker hipotecario</p>
+
+        <h1 class="hero__title">
+          No solo conseguimos hipotecas. Te acompañamos en una de las decisiones más importantes de
+          tu vida.
+        </h1>
+
+        <p class="hero__text">
+          En FINOVA somos un broker hipotecario registrado en el Banco de España. Analizamos tu
+          perfil, buscamos y negociamos alternativas de financiación entre distintas entidades y te
+          acompañamos durante todo el proceso, desde el estudio inicial hasta la firma de tu
+          hipoteca.
+        </p>
+
+        <div class="hero__actions">
+          <Button href={primaryCta.href} size="large">{primaryCta.label}</Button>
+          <Button href="/#proceso" variant="secondary" size="large">Cómo trabajamos</Button>
+        </div>
+
+        <p class="hero__regulatory">
+          Intermediario de Crédito Inmobiliario · Banco de España · Nº
+          {COMPANY.registrations.bankOfSpain}
+        </p>
+      </div>
+
+      {
+        /*
+        Zona de imagen. Marcador discreto hasta que exista el asset real:
+        no se usan fotografías externas ni degradados que finjan una fotografía.
+        Instrucciones de sustitución en src/assets/images/home/README.md.
+      */
+      }
+      <div class="hero__media">
+        <p class="hero__media-note">Imagen pendiente de entrega</p>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: var(--space-10) var(--space-11);
+    isolation: isolate;
+  }
+
+  .hero__grid {
+    display: grid;
+    gap: var(--space-9);
+    align-items: center;
+  }
+
+  .hero__title {
+    margin-block-start: var(--space-4);
+    text-wrap: balance;
+  }
+
+  .hero__text {
+    max-inline-size: 54ch;
+    margin-block-start: var(--space-6);
+    font-size: var(--font-size-body-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-block-start: var(--space-8);
+  }
+
+  .hero__regulatory {
+    max-inline-size: none;
+    margin-block-start: var(--space-7);
+    font-size: var(--font-size-label);
+    color: var(--color-text-muted);
+  }
+
+  .hero__media {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    background-color: var(--color-background-soft);
+    border: var(--border-width) dashed var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .hero__media-note {
+    max-inline-size: none;
+    font-size: var(--font-size-label);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      padding-block: var(--space-12) var(--space-13);
+    }
+
+    .hero__grid {
+      grid-template-columns: 1.15fr 1fr;
+      gap: var(--space-11);
+    }
+  }
+</style>
